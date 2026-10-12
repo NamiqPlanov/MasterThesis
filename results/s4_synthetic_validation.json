@@ -1,0 +1,102 @@
+{
+  "seed": 42,
+  "checks": {
+    "LinearExplainer matches closed form (<1e-6)": true,
+    "LR ranks the 5 informative features correctly (rho > 0.9)": true,
+    "RF ranks the 5 informative features correctly (rho > 0.8)": true,
+    "LR global top-5 = planted top-5 (Jaccard = 1.0)": true,
+    "SHAP beats random on faithfulness": true,
+    "random attribution fails recovery (|rho| < 0.3)": true,
+    "stability finite and ordered (LR smoother than RF)": true
+  },
+  "report": {
+    "LogisticRegression": {
+      "auc_pr": 0.6724305399664277,
+      "global_recovery_rho": 0.9999999999999999,
+      "global_recovery_rho_all": 0.7608859102526822,
+      "global_jaccard_at_5": 1.0,
+      "closed_form_max_error": 0.0,
+      "per_instance_spearman_vs_planted": [
+        0.6935590357697173,
+        0.6774816153024303,
+        0.7077572986101685
+      ],
+      "jaccard_at_5": [
+        0.7753968253968253,
+        0.7412698412698412,
+        0.8115079365079365
+      ],
+      "noise_mass": [
+        0.15600049874701227,
+        0.14479290923855673,
+        0.16803889065216773
+      ],
+      "faithfulness": [
+        0.015068047778275494,
+        0.00427424814743986,
+        0.03087128575609093
+      ],
+      "max_sensitivity": [
+        0.039975712660327074,
+        0.038467148603913724,
+        0.041519477838349
+      ]
+    },
+    "RandomForest": {
+      "auc_pr": 0.4684621933804458,
+      "global_recovery_rho": 0.9999999999999999,
+      "global_recovery_rho_all": 0.7608859102526822,
+      "global_jaccard_at_5": 1.0,
+      "closed_form_max_error": null,
+      "per_instance_spearman_vs_planted": [
+        0.6594344555523245,
+        0.6394154978454004,
+        0.6780794542319145
+      ],
+      "jaccard_at_5": [
+        0.6949404761904762,
+        0.6619965277777777,
+        0.7289707341269841
+      ],
+      "noise_mass": [
+        0.2911250485624048,
+        0.2762232178507271,
+        0.3055672031119282
+      ],
+      "faithfulness": [
+        0.012968990753235153,
+        0.008530579011267048,
+        0.018370878895749405
+      ],
+      "max_sensitivity": [
+        0.22898343176150304,
+        0.16638070706078045,
+        0.2995856203462432
+      ]
+    },
+    "RandomAttribution": {
+      "spearman_vs_truth": [
+        0.008478442999958459,
+        -0.0360170780517466,
+        0.05810500312827007
+      ],
+      "faithfulness": [
+        0.000890175430147313,
+        -0.005850307873756139,
+        0.007993483259960353
+      ]
+    },
+    "cross_model_agreement": {
+      "spearman": [
+        0.5261203007518798,
+        0.4960815789473684,
+        0.556486842105263
+      ],
+      "jaccard_at_5": [
+        0.6123809523809526,
+        0.5746339285714287,
+        0.6523869047619048
+      ]
+    }
+  }
+}

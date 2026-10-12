@@ -1,0 +1,27 @@
+# Datasets are NOT redistributed (Research Proposal, section 4.4).
+# ULB is under ODbL/DbCL; IEEE-CIS is competition data governed by the Kaggle
+# competition rules. Both are fetched by experiments/00_get_data.py instead.
+data/
+
+# Fitted models and cached splits: large, and reproducible from the scripts
+artifacts/
+
+# Credentials must never enter the repository
+.kaggle/
+*access_token*
+kaggle.json
+.env
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Office lock files
+~$*
+
+# OS
+Thumbs.db
+.DS_Store

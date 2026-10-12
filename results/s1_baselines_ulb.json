@@ -1,0 +1,76 @@
+{
+  "seed": 42,
+  "split": "time-ordered",
+  "test_fraction": 0.3,
+  "results": {
+    "LogisticRegression": {
+      "auc_pr": 0.7676770665472616,
+      "roc_auc": 0.9795554665815989,
+      "fit_seconds": 0.7028102874755859,
+      "recall_at_0.001": {
+        "recall": 0.7129629629629629,
+        "caught": 77,
+        "alerts": 85,
+        "of_frauds": 108
+      },
+      "recall_at_0.005": {
+        "recall": 0.8611111111111112,
+        "caught": 93,
+        "alerts": 427,
+        "of_frauds": 108
+      },
+      "recall_at_0.01": {
+        "recall": 0.8611111111111112,
+        "caught": 93,
+        "alerts": 854,
+        "of_frauds": 108
+      }
+    },
+    "RandomForest": {
+      "auc_pr": 0.8195957545929872,
+      "roc_auc": 0.9529124322658628,
+      "fit_seconds": 53.12386131286621,
+      "recall_at_0.001": {
+        "recall": 0.75,
+        "caught": 81,
+        "alerts": 85,
+        "of_frauds": 108
+      },
+      "recall_at_0.005": {
+        "recall": 0.8333333333333334,
+        "caught": 90,
+        "alerts": 427,
+        "of_frauds": 108
+      },
+      "recall_at_0.01": {
+        "recall": 0.8888888888888888,
+        "caught": 96,
+        "alerts": 854,
+        "of_frauds": 108
+      }
+    },
+    "XGBoost": {
+      "auc_pr": 0.8049948424678584,
+      "roc_auc": 0.9773249871421782,
+      "fit_seconds": 8.909458875656128,
+      "recall_at_0.001": {
+        "recall": 0.7407407407407407,
+        "caught": 80,
+        "alerts": 85,
+        "of_frauds": 108
+      },
+      "recall_at_0.005": {
+        "recall": 0.8333333333333334,
+        "caught": 90,
+        "alerts": 427,
+        "of_frauds": 108
+      },
+      "recall_at_0.01": {
+        "recall": 0.8611111111111112,
+        "caught": 93,
+        "alerts": 854,
+        "of_frauds": 108
+      }
+    }
+  }
+}
