@@ -8,7 +8,7 @@
     "LogisticRegression": {
       "auc_pr": 0.4138656042959388,
       "roc_auc": 0.8383627811937358,
-      "fit_seconds": 57.19474983215332,
+      "fit_seconds": 62.61853861808777,
       "input": "scaled",
       "recall_at_0.001": {
         "recall": 0.02314445331205108,
@@ -32,7 +32,7 @@
     "RandomForest": {
       "auc_pr": 0.5153775280574944,
       "roc_auc": 0.8845450279108744,
-      "fit_seconds": 26.68388032913208,
+      "fit_seconds": 26.877294063568115,
       "input": "imputed",
       "recall_at_0.001": {
         "recall": 0.023942537909018357,
@@ -56,7 +56,7 @@
     "XGBoost": {
       "auc_pr": 0.5756142337652818,
       "roc_auc": 0.8882079691678867,
-      "fit_seconds": 32.04574131965637,
+      "fit_seconds": 32.54038071632385,
       "input": "raw",
       "recall_at_0.001": {
         "recall": 0.023942537909018357,
