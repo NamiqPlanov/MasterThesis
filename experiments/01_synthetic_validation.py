@@ -100,11 +100,11 @@ def main() -> int:
         def predict(a, m=model):
             return m.predict_proba(a)[:, 1]
 
-        def explain_one(x, e=explainer):
-            v = np.asarray(e.shap_values(x.reshape(1, -1)))
+        def explain_batch(a, e=explainer):
+            v = np.asarray(e.shap_values(a))
             if v.ndim == 3:
                 v = v[:, :, 1]
-            return v.reshape(-1)
+            return v
 
         # SHAP explains the MODEL, not the data-generating process. Two
         # different questions, and conflating them invalidates the control:
@@ -130,7 +130,7 @@ def main() -> int:
         recov = [ground_truth_recovery(row, np.abs(TRUE_COEFS)) for row in sv]
         faith = [faithfulness(predict, sample[i], sv[i], baseline)
                  for i in range(len(sample))]
-        stab = [max_sensitivity(explain_one, sample[i], eps=0.05, n_samples=10,
+        stab = [max_sensitivity(explain_batch, sample[i], eps=0.05, n_samples=10,
                                 rng=np.random.default_rng(i))
                 for i in range(25)]          # costly: a 25-instance subsample
 

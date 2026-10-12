@@ -43,6 +43,7 @@ N_ALERT, N_RANDOM = 400, 600      # ~1,000 instances, as the proposal specifies
 N_LIME = 120                      # LIME is far slower; subsample with CIs
 N_STABILITY = 80
 TOP_K = 5
+CURVE_K = 20            # fidelity curve length; identical across datasets
 
 
 def main() -> int:
@@ -89,18 +90,18 @@ def main() -> int:
         def predict(a, m=model):
             return m.predict_proba(a)[:, 1]
 
-        faith_alert = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline)
+        faith_alert = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
                        for i in range(N_ALERT)]
-        faith_rand = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline)
+        faith_rand = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
                       for i in range(N_ALERT, len(idx_all))]
 
-        def explain_one(x, e=ex):
-            v = np.asarray(e.shap_values(x.reshape(1, -1)))
+        def explain_batch(a, e=ex):
+            v = np.asarray(e.shap_values(a))
             if v.ndim == 3:
                 v = v[:, :, 1]
-            return v.reshape(-1)
+            return v
 
-        stab = [max_sensitivity(explain_one, Xte[idx_all[i]], eps=0.05,
+        stab = [max_sensitivity(explain_batch, Xte[idx_all[i]], eps=0.05,
                                 n_samples=8, rng=np.random.default_rng(i))
                 for i in range(N_STABILITY)]
 

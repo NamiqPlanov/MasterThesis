@@ -26,7 +26,7 @@ __all__ = [
 
 
 # --------------------------------------------------------------- fidelity ---
-def _curve(predict, x, attribution, baseline, *, insert):
+def _curve(predict, x, attribution, baseline, *, insert, k=None):
     """Model output as features are removed (or inserted) most-important first.
 
     Removal replaces a feature with its baseline value (the dataset mean), so
@@ -34,6 +34,12 @@ def _curve(predict, x, attribution, baseline, *, insert):
     deleting the features it calls important should move the output fast.
     """
     order = np.argsort(-np.abs(attribution))
+    # Walking all d features costs d+1 model evaluations per curve, which is
+    # fine at d=30 and impractical at d=390. The informative part of a
+    # deletion/insertion curve is its head, so k truncates it to the top-k
+    # features. k must be the same across datasets for the numbers to compare.
+    if k is not None:
+        order = order[:k]
     n = len(order)
     # Build every step of the curve first and score them in ONE call: a
     # per-step predict costs 62 model invocations per instance, which makes
@@ -48,41 +54,45 @@ def _curve(predict, x, attribution, baseline, *, insert):
     return np.asarray(predict(rows), dtype=float), n
 
 
-def deletion_curve(predict, x, attribution, baseline):
-    return _curve(predict, x, attribution, baseline, insert=False)[0]
+def deletion_curve(predict, x, attribution, baseline, k=None):
+    return _curve(predict, x, attribution, baseline, insert=False, k=k)[0]
 
 
-def insertion_curve(predict, x, attribution, baseline):
-    return _curve(predict, x, attribution, baseline, insert=True)[0]
+def insertion_curve(predict, x, attribution, baseline, k=None):
+    return _curve(predict, x, attribution, baseline, insert=True, k=k)[0]
 
 
-def faithfulness(predict, x, attribution, baseline):
-    """insertion AUC - deletion AUC, normalised to the number of features.
+def faithfulness(predict, x, attribution, baseline, k=None):
+    """insertion AUC - deletion AUC, normalised to the number of steps.
 
     Higher is better. A random attribution scores near zero because inserting
     and deleting in a meaningless order move the output at the same rate.
     """
-    dele = deletion_curve(predict, x, attribution, baseline)
-    ins = insertion_curve(predict, x, attribution, baseline)
+    dele = deletion_curve(predict, x, attribution, baseline, k)
+    ins = insertion_curve(predict, x, attribution, baseline, k)
     return float(np.trapezoid(ins) - np.trapezoid(dele)) / len(dele)
 
 
 # -------------------------------------------------------------- stability ---
-def max_sensitivity(explain, x, eps=0.05, n_samples=15, rng=None):
+def max_sensitivity(explain_batch, x, eps=0.05, n_samples=15, rng=None):
     """Largest relative change in the attribution within an eps-ball of x.
 
     Lower is better. An explanation that flips when the input is nudged by an
     imperceptible amount cannot be the basis of an investigator's decision.
+
+    `explain_batch` takes a (n, d) array and returns (n, d) attributions. The
+    perturbations are explained in ONE call: explaining them one at a time
+    rebuilds the explainer per row, which is what made this intractable on a
+    390-feature forest.
     """
     rng = rng or np.random.default_rng(0)
-    base = np.asarray(explain(x), dtype=float)
+    x = np.asarray(x, dtype=float)
+    noise = rng.uniform(-eps, eps, size=(n_samples, x.size)) * (np.abs(x) + 1e-8)
+    batch = np.vstack([x.reshape(1, -1), x.reshape(1, -1) + noise])
+    attrs = np.asarray(explain_batch(batch), dtype=float)
+    base, perturbed = attrs[0], attrs[1:]
     denom = np.linalg.norm(base) or 1.0
-    worst = 0.0
-    for _ in range(n_samples):
-        noise = rng.uniform(-eps, eps, size=x.shape) * (np.abs(x) + 1e-8)
-        pert = np.asarray(explain(x + noise), dtype=float)
-        worst = max(worst, float(np.linalg.norm(pert - base) / denom))
-    return worst
+    return float(np.max(np.linalg.norm(perturbed - base, axis=1) / denom))
 
 
 # -------------------------------------------------------------- agreement ---
