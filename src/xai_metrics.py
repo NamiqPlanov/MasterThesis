@@ -66,21 +66,23 @@ def insertion_curve(predict, x, attribution, baseline, k=None):
 def deletion_fidelity(predict, x, attribution, baseline, k=20):
     """How far the model's output falls as its top-k features are removed.
 
-    Normalised by the starting prediction, so it is comparable across datasets
-    of different dimensionality. 1.0 means the output collapsed to zero once
-    the named features were taken away; 0.0 means removing them changed
-    nothing, i.e. the attribution named features the model was not using.
+    Reported as an ABSOLUTE drop in predicted probability, not a ratio.
+    Dividing by the starting prediction looks tidier but explodes on
+    legitimate transactions, where the model outputs ~1e-6 and any movement
+    becomes a ratio in the thousands. Probabilities already share a scale
+    across datasets, so no normalisation is needed.
 
-    Preferred over `faithfulness` below whenever k is much smaller than the
-    number of features: an insertion curve that fills only k of d features
-    never approaches the real prediction, which drives insertion-minus-deletion
-    negative for reasons that have nothing to do with explanation quality.
+    Range is [-1, 1]. Positive means removing the features the attribution
+    named pulled the fraud score down, which is what a faithful attribution
+    should do. Near zero means it named features the model was not using.
+
+    Preferred over `faithfulness` whenever k is much smaller than the number
+    of features: an insertion curve that fills only k of d features never
+    approaches the real prediction, which drives insertion-minus-deletion
+    negative for reasons unrelated to explanation quality.
     """
     curve = deletion_curve(predict, x, attribution, baseline, k)
-    start = curve[0]
-    if abs(start) < 1e-9:
-        return float("nan")          # nothing to explain at this instance
-    return float((start - curve.mean()) / abs(start))
+    return float(curve[0] - curve.mean())
 
 
 def faithfulness(predict, x, attribution, baseline, k=None):
