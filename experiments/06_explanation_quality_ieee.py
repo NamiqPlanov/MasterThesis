@@ -29,7 +29,7 @@ import shap
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from xai_metrics import (  # noqa: E402
-    bootstrap_ci, faithfulness, jaccard_at_k, max_sensitivity, rank_agreement,
+    bootstrap_ci, deletion_fidelity, jaccard_at_k, max_sensitivity, rank_agreement,
 )
 
 warnings.filterwarnings("ignore")
@@ -102,7 +102,7 @@ def main() -> int:
         def predict(a, m=model):
             return m.predict_proba(a)[:, 1]
 
-        fa = bootstrap_ci([faithfulness(predict, Xm[idx_all[i]], sv[i], base, k=CURVE_K)
+        fa = bootstrap_ci([deletion_fidelity(predict, Xm[idx_all[i]], sv[i], base, k=CURVE_K)
                            for i in range(N_ALERT)])
 
         def explain_batch(a, e=ex):

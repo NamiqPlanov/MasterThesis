@@ -33,7 +33,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 from xai_metrics import (  # noqa: E402
-    bootstrap_ci, faithfulness, jaccard_at_k, max_sensitivity, rank_agreement,
+    bootstrap_ci, deletion_fidelity, jaccard_at_k, max_sensitivity, rank_agreement,
 )
 
 warnings.filterwarnings("ignore")
@@ -90,9 +90,9 @@ def main() -> int:
         def predict(a, m=model):
             return m.predict_proba(a)[:, 1]
 
-        faith_alert = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
+        faith_alert = [deletion_fidelity(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
                        for i in range(N_ALERT)]
-        faith_rand = [faithfulness(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
+        faith_rand = [deletion_fidelity(predict, Xte[idx_all[i]], sv[i], baseline, k=CURVE_K)
                       for i in range(N_ALERT, len(idx_all))]
 
         def explain_batch(a, e=ex):
@@ -123,8 +123,8 @@ def main() -> int:
 
         print(f"\n  --- {name}  ({time.time() - t:.0f}s) ---")
         print(f"  {'measure':<38}{'mean':>8}{'95% CI':>20}")
-        for lbl, v in (("fidelity, alert queue", fa_a),
-                       ("fidelity, random sample", fa_r),
+        for lbl, v in (("deletion fidelity, alerts", fa_a),
+                       ("deletion fidelity, random", fa_r),
                        ("max-sensitivity (lower better)", st),
                        ("SHAP vs LIME, Spearman", ar),
                        (f"SHAP vs LIME, Jaccard@{TOP_K}", aj)):

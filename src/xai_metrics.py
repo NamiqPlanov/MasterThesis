@@ -19,6 +19,7 @@ import numpy as np
 from scipy.stats import spearmanr
 
 __all__ = [
+    "deletion_fidelity",
     "deletion_curve", "insertion_curve", "faithfulness",
     "max_sensitivity", "rank_agreement", "jaccard_at_k",
     "ground_truth_recovery", "bootstrap_ci",
@@ -60,6 +61,26 @@ def deletion_curve(predict, x, attribution, baseline, k=None):
 
 def insertion_curve(predict, x, attribution, baseline, k=None):
     return _curve(predict, x, attribution, baseline, insert=True, k=k)[0]
+
+
+def deletion_fidelity(predict, x, attribution, baseline, k=20):
+    """How far the model's output falls as its top-k features are removed.
+
+    Normalised by the starting prediction, so it is comparable across datasets
+    of different dimensionality. 1.0 means the output collapsed to zero once
+    the named features were taken away; 0.0 means removing them changed
+    nothing, i.e. the attribution named features the model was not using.
+
+    Preferred over `faithfulness` below whenever k is much smaller than the
+    number of features: an insertion curve that fills only k of d features
+    never approaches the real prediction, which drives insertion-minus-deletion
+    negative for reasons that have nothing to do with explanation quality.
+    """
+    curve = deletion_curve(predict, x, attribution, baseline, k)
+    start = curve[0]
+    if abs(start) < 1e-9:
+        return float("nan")          # nothing to explain at this instance
+    return float((start - curve.mean()) / abs(start))
 
 
 def faithfulness(predict, x, attribution, baseline, k=None):
