@@ -34,9 +34,9 @@ Checks that the measures recover importances planted by construction. If any of 
 | ULB | LogisticRegression | 0.645 [0.622, 0.669] | 0.039 [0.038, 0.040] | 0.701 [0.684, 0.719] | 0.460 [0.412, 0.505] |
 | ULB | RandomForest | 0.170 [0.145, 0.196] | 0.087 [0.072, 0.104] | 0.512 [0.486, 0.537] | 0.483 [0.445, 0.522] |
 | ULB | XGBoost | 0.218 [0.182, 0.255] | 0.085 [0.064, 0.112] | 0.301 [0.273, 0.327] | 0.260 [0.237, 0.283] |
-| IEEE-CIS | LogisticRegression | -0.196 [-0.229, -0.164] | 0.035 [0.034, 0.035] | — | — |
-| IEEE-CIS | RandomForest | -0.369 [-0.380, -0.358] | 0.269 [0.251, 0.287] | — | — |
-| IEEE-CIS | XGBoost | -0.823 [-0.835, -0.811] | 0.603 [0.574, 0.634] | — | — |
+| IEEE-CIS | LogisticRegression | 0.128 [0.111, 0.146] | 0.035 [0.034, 0.035] | — | — |
+| IEEE-CIS | RandomForest | 0.166 [0.157, 0.176] | 0.269 [0.251, 0.287] | — | — |
+| IEEE-CIS | XGBoost | 0.113 [0.102, 0.124] | 0.603 [0.574, 0.634] | — | — |
 
 ### Do different models explain the same alert the same way?
 
@@ -51,7 +51,9 @@ Checks that the measures recover importances planted by construction. If any of 
 
 ## S3 — does resampling change the explanation?
 
-One architecture, one test set, three training regimes.
+One architecture, one test set, three training regimes, run independently on each dataset.
+
+### ULB
 
 | Regime | AUC-PR | ρ vs natural | Jaccard@5 vs natural |
 |---|---|---|---|
@@ -73,6 +75,34 @@ AUC-PR spread across regimes: **0.0244**
 | natural | V14 (88%), V4 (7%), Time (3%) |
 | undersample | V4 (39%), V10 (33%), V14 (27%) |
 | smote | V14 (58%), Time (30%), V11 (10%) |
+
+H0 (rankings invariant to regime): **REJECTED**
+
+### IEEE-CIS
+
+150,000 of 590,540 rows (chronological, memory constrained).
+
+
+| Regime | AUC-PR | ρ vs natural | Jaccard@5 vs natural |
+|---|---|---|---|
+| natural | 0.5100 | — | — |
+| undersample | 0.5213 | 0.703 [0.699, 0.707] | 0.359 [0.343, 0.374] |
+| smote | 0.5724 | 0.638 [0.633, 0.643] | 0.332 [0.317, 0.347] |
+
+AUC-PR spread across regimes: **0.0624**
+
+| Comparison | Wilcoxon p | mean ρ | Cohen's d |
+|---|---|---|---|
+| natural vs undersample | 1.37e-67 | 0.703 | 7.32 |
+| natural vs smote | 1.37e-67 | 0.638 | 7.29 |
+
+**Most-named feature per regime**
+
+| Regime | Top features |
+|---|---|
+| natural | TransactionDT (63%), C1 (27%), V317 (8%) |
+| undersample | V258 (55%), C2 (22%), TransactionAmt (21%) |
+| smote | C1 (65%), M4 (18%), V258 (15%) |
 
 H0 (rankings invariant to regime): **REJECTED**
 

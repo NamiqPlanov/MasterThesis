@@ -10,6 +10,7 @@ numbers that produced them. Re-run after any experiment.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -98,11 +99,23 @@ for tag, fn in (("ULB", "s2_explanation_quality_ulb.json"),
 lines.append("")
 
 # -------------------------------------------------------------- S3 imbalance
-s3 = load("s3_imbalance_explanation_ulb.json")
-if s3:
+s3_sets = [("ULB", "s3_imbalance_explanation_ulb.json"),
+           ("IEEE-CIS", "s3_imbalance_explanation_ieee.json")]
+if any(load(fn) for _, fn in s3_sets):
     lines += ["## S3 — does resampling change the explanation?", "",
-              "One architecture, one test set, three training regimes.", "",
-              "| Regime | AUC-PR | ρ vs natural | Jaccard@5 vs natural |",
+              "One architecture, one test set, three training regimes, run "
+              "independently on each dataset.", ""]
+for label, fn in s3_sets:
+    s3 = load(fn)
+    if not s3:
+        continue
+    lines.append(f"### {label}")
+    if s3.get("rows_used") and s3.get("rows_available") \
+            and s3["rows_used"] < s3["rows_available"]:
+        lines += ["", f"{s3['rows_used']:,} of {s3['rows_available']:,} rows "
+                  f"({s3.get('subsample_note', 'subsample')}).",
+                  ""]
+    lines += ["", "| Regime | AUC-PR | ρ vs natural | Jaccard@5 vs natural |",
               "|---|---|---|---|"]
     for regime, ap in s3["performance"].items():
         agr = s3["agreement"].get(regime)
@@ -140,4 +153,6 @@ if s2i and "semantic_share" in s2i:
 
 OUT.write_text("\n".join(lines), encoding="utf-8")
 print(f"wrote {OUT.relative_to(ROOT)}  ({len(lines)} lines)")
-print("\n".join(lines[:40]))
+# the Windows console is cp1252; rho and em-dash would raise UnicodeEncodeError
+enc = sys.stdout.encoding or "utf-8"
+print("\n".join(lines[:40]).encode(enc, "replace").decode(enc))
