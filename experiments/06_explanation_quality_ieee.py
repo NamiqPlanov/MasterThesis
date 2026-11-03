@@ -14,9 +14,10 @@ two human raters will score.
 """
 
 from __future__ import annotations
-
+from scipy.stats import wilcoxon
 import json
 import re
+import os
 import sys
 import time
 import warnings
@@ -33,10 +34,14 @@ from xai_metrics import (  # noqa: E402
 )
 
 warnings.filterwarnings("ignore")
+# filterwarnings only binds this process; joblib's n_jobs=-1 workers are
+# separate processes and re-emit every warning to the shared stderr. The
+# env var is inherited, so it silences them too.
+os.environ.setdefault("PYTHONWARNINGS", "ignore")
 ART, OUT = ROOT / "artifacts", ROOT / "results"
 SEED = 42
 N_ALERT, N_RANDOM = 400, 600
-N_STABILITY = 80
+N_STABILITY = 1000
 TOP_K = 5
 CURVE_K = 20            # fidelity curve length; identical across datasets
 
@@ -144,17 +149,27 @@ def main() -> int:
     for a, b in (("LogisticRegression", "RandomForest"),
                  ("LogisticRegression", "XGBoost"),
                  ("RandomForest", "XGBoost")):
-        rho = bootstrap_ci([rank_agreement(shap_vals[a][i], shap_vals[b][i])
-                            for i in range(N_ALERT)])
+        rhos = np.array([rank_agreement(shap_vals[a][i], shap_vals[b][i])
+                         for i in range(N_ALERT)])
+        rhos = rhos[np.isfinite(rhos)]
+        rho = bootstrap_ci(rhos)
         jac = bootstrap_ci([jaccard_at_k(shap_vals[a][i], shap_vals[b][i], TOP_K)
                             for i in range(N_ALERT)])
+        # H0: the two models rank this alert's features identically
+        stat, p = wilcoxon(rhos - 1.0, alternative="less")
+        d = float((1.0 - rhos.mean()) / (rhos.std(ddof=1) or 1e-9))
         print(f"  {a[:12]:>12} vs {b[:12]:<14} rho {rho[0]:>6.3f}   "
-              f"Jaccard@{TOP_K} {jac[0]:>5.3f}")
-        cross[f"{a}|{b}"] = {"spearman": rho, "jaccard": jac}
+              f"Jaccard@{TOP_K} {jac[0]:>5.3f}   p {p:.2e}   d {d:.2f}")
+        cross[f"{a}|{b}"] = {"spearman": rho, "jaccard": jac,
+                             "p_value": float(p), "cohens_d": d,
+                             "n": int(len(rhos))}
 
     (OUT / "s2_explanation_quality_ieee.json").write_text(
         json.dumps({"seed": SEED, "n_features": len(cols),
                     "n_semantic_features": n_sem,
+                    "n_alert": N_ALERT, "n_random": N_RANDOM,
+                    "n_stability": N_STABILITY, "curve_k": CURVE_K,
+                    "top_k": TOP_K,
                     "per_model": report, "cross_model": cross,
                     "semantic_share": semantic_share},
                    indent=2, default=float), encoding="utf-8")

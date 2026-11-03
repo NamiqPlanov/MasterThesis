@@ -9,7 +9,8 @@ IEEE-CIS is a strong replication test because almost everything differs:
   domain        card-present extract  ->  real e-commerce
   fraud rate    0.17%                ->  3.37%  (20x)
   features      30                   ->  390   (13x)
-  span          48 hours             ->  85 days
+  span          48 hours             ->  35 days (the 150k subsample; the
+                                       full file covers 182 days)
 
 H0: SHAP rankings are invariant to the resampling regime.
 

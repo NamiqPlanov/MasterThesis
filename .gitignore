@@ -25,3 +25,7 @@ __pycache__/
 # OS
 Thumbs.db
 .DS_Store
+
+# run logs (can reach hundreds of MB)
+logs/
+*.log

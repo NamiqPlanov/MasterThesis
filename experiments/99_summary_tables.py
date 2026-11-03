@@ -52,19 +52,24 @@ if s4:
 
 # -------------------------------------------------------------- S1 baselines
 lines += ["## S1 — baseline models (time-ordered splits)", "",
-          "| Dataset | Model | AUC-PR | ROC-AUC | Recall @0.5% budget |",
-          "|---|---|---|---|---|"]
+          "An alert budget of *b* means the investigator reviews the top *b* "
+          "fraction of test transactions, ranked by model score.", "",
+          "| Dataset | Model | AUC-PR | ROC-AUC | Precision @0.5% | Recall @0.5% |",
+          "|---|---|---|---|---|---|"]
 for tag, fn in (("ULB", "s1_baselines_ulb.json"),
                 ("IEEE-CIS", "s1_baselines_ieee.json")):
     d = load(fn)
     if not d:
         continue
     for model, r in d["results"].items():
-        rec = r.get("recall_at_0.005", {}).get("recall")
-        lines.append(f"| {tag} | {model} | {r['auc_pr']:.4f} | "
-                     f"{r['roc_auc']:.4f} | "
-                     f"{rec:.3f} |" if rec is not None else
-                     f"| {tag} | {model} | {r['auc_pr']:.4f} | {r['roc_auc']:.4f} | — |")
+        b = r.get("recall_at_0.005")
+        if b:
+            prec = b["caught"] / b["alerts"]
+            lines.append(f"| {tag} | {model} | {r['auc_pr']:.4f} | "
+                         f"{r['roc_auc']:.4f} | {prec:.3f} | {b['recall']:.3f} |")
+        else:
+            lines.append(f"| {tag} | {model} | {r['auc_pr']:.4f} | "
+                         f"{r['roc_auc']:.4f} | — | — |")
 lines.append("")
 
 # ------------------------------------------------- S2 explanation quality
@@ -86,7 +91,11 @@ lines.append("")
 
 # cross-model agreement
 lines += ["### Do different models explain the same alert the same way?", "",
-          "| Dataset | Pair | Spearman | Jaccard@5 |", "|---|---|---|---|"]
+          "H0: the two models rank the alert's features identically. "
+          "With n = 400 the p-value is almost guaranteed to be small, so "
+          "Cohen's d carries the argument.", "",
+          "| Dataset | Pair | Spearman | Jaccard@5 | Wilcoxon p | Cohen's d |",
+          "|---|---|---|---|---|---|"]
 for tag, fn in (("ULB", "s2_explanation_quality_ulb.json"),
                 ("IEEE-CIS", "s2_explanation_quality_ieee.json")):
     d = load(fn)
@@ -94,8 +103,10 @@ for tag, fn in (("ULB", "s2_explanation_quality_ulb.json"),
         continue
     for pair, r in d.get("cross_model", {}).items():
         a, b = pair.split("|")
+        p = f"{r['p_value']:.3g}" if "p_value" in r else "—"
+        cd = f"{r['cohens_d']:.2f}" if "cohens_d" in r else "—"
         lines.append(f"| {tag} | {a} vs {b} | {ci(r['spearman'])} | "
-                     f"{ci(r['jaccard'])} |")
+                     f"{ci(r['jaccard'])} | {p} | {cd} |")
 lines.append("")
 
 # -------------------------------------------------------------- S3 imbalance
@@ -137,6 +148,34 @@ for label, fn in s3_sets:
         lines.append(f"| {regime} | {s} |")
     lines += ["", f"H0 (rankings invariant to regime): "
               f"**{'REJECTED' if s3['h0_rejected'] else 'not rejected'}**", ""]
+
+# ------------------------------------------- S5 stability across seeds
+s5 = load("s5_stability_seeds.json")
+if s5:
+    lines += ["## S5 — is the explanation stable across retraining seeds?", "",
+              "A control for S3. S2's max-sensitivity perturbs the *input*; "
+              "this perturbs the *seed*, holding the data fixed. "
+              f"{len(s5['seeds'])} seeds, {s5['n_alert']} alerts, "
+              f"reference seed {s5['reference_seed']}.", "",
+              "| Seed | ρ vs reference | Jaccard@5 | Cohen's d |",
+              "|---|---|---|---|"]
+    for seed, agr in s5["agreement"].items():
+        t = s5.get("tests", {}).get(seed, {})
+        cd = f"{t['cohens_d']:.2f}" if "cohens_d" in t else "—"
+        lines.append(f"| {seed} | {ci(agr['spearman'])} | "
+                     f"{ci(agr['jaccard'])} | {cd} |")
+    lines += ["", f"Mean Spearman across seeds: **{s5['mean_spearman']:.3f}**",
+              "", f"AUC-PR spread across seeds: **{s5['auc_pr_spread']:.4f}**",
+              ""]
+    # the contrast with S3 is the whole point of running this
+    s3u = load("s3_imbalance_explanation_ulb.json")
+    if s3u:
+        worst = min(t["mean_rho"] for t in s3u["tests"].values())
+        lines += ["**The comparison that matters.** Changing the training "
+                  f"seed moves the ranking to ρ = {s5['mean_spearman']:.3f}; "
+                  f"changing the resampling regime moves it to ρ = "
+                  f"{worst:.3f}. The divergence in S3 is therefore caused by "
+                  "the imbalance strategy, not by stochastic training.", ""]
 
 # ------------------------------------------------------ Objective 4 numbers
 s2i = load("s2_explanation_quality_ieee.json")

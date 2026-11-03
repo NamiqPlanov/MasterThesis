@@ -175,7 +175,10 @@ if ieee and "semantic_share" in ieee:
     ax.set_xlabel("alerts whose top-ranked feature is humanly meaningful (%)")
     ax.set_xlim(0, 100)
     ax.grid(axis="y", visible=False)
-    ax.set_title("IEEE-CIS has 24 meaningful features of 392 — "
+    # read from the same JSON the bars come from: the S2 split drops two
+    # all-missing columns, so the EDA's 24-of-392 does not describe this panel
+    ax.set_title(f"IEEE-CIS has {ieee['n_semantic_features']} meaningful "
+                 f"features of {ieee['n_features']} — "
                  "and models rarely rank them first", color=INK, loc="left")
     ax.annotate("ULB scores 0% by construction: every feature except\n"
                 "Time and Amount is an anonymised principal component.",
@@ -183,6 +186,44 @@ if ieee and "semantic_share" in ieee:
     save(fig, "fig4_semantic_share", "actionability of the top feature (Obj. 4)")
     made += 1
 
+# --- Figure 5: seed noise vs the resampling effect -------------------------
+# The reviewer's obvious objection to S3 is "maybe SHAP is just noisy". This
+# figure answers it: retraining moves the ranking far less than resampling.
+s5, s3u = load("s5_stability_seeds.json"), load("s3_imbalance_explanation_ulb.json")
+if s5 and s3u:
+    per_seed = [t["mean_rho"] for t in s5["tests"].values()]
+    rows = [("different training seed\n(same data, same recipe)",
+             s5["mean_spearman"], min(per_seed), max(per_seed), AQUA)]
+    label = {"smote": "SMOTE oversampling", "undersample": "random undersampling"}
+    for regime, t in sorted(s3u["tests"].items(),
+                            key=lambda kv: -kv[1]["mean_rho"]):
+        lo, hi = s3u["agreement"][regime]["spearman"][1:3]
+        rows.append((f"{label.get(regime, regime)}\n(same seed, rebalanced)",
+                     t["mean_rho"], lo, hi, ORANGE))
+
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ypos = np.arange(len(rows))[::-1]
+    for y, (lbl, m, lo, hi, colour) in zip(ypos, rows):
+        ax.barh(y, m, height=0.52, color=colour, zorder=3)
+        ax.plot([lo, hi], [y, y], color=INK2, lw=1.4, zorder=4)
+        ax.annotate(f"{m:.3f}", (m, y), xytext=(8, 0),
+                    textcoords="offset points", va="center",
+                    fontsize=10, color=INK2, zorder=5)
+    ax.axvline(1.0, color=MUTED, ls="--", lw=1, zorder=2)
+    ax.annotate("identical ranking", (1.0, 0.97), xycoords=("data", "axes fraction"),
+                xytext=(-5, 0), textcoords="offset points", ha="right",
+                va="top", fontsize=9, color=MUTED)
+    ax.set_yticks(ypos)
+    ax.set_yticklabels([r[0] for r in rows], fontsize=9)
+    ax.set_xlim(0, 1.12)
+    ax.set_xlabel("Spearman agreement with the reference explanation")
+    ax.grid(axis="y", visible=False)
+    ax.set_title("Resampling changes the explanation; retraining barely does",
+                 color=INK, loc="left")
+    save(fig, "fig5_seed_vs_resampling",
+         "seed noise vs the resampling effect (S5 against S3)")
+    made += 1
+
 print(f"\n{made} figures written to figures/ (PNG at 300 dpi, plus PDF)")
-if made < 4:
+if made < 5:
     print("some results JSON missing - re-run the matching experiment first")

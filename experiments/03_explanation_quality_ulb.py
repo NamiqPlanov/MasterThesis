@@ -18,7 +18,7 @@ sample (the population the model scores).
 """
 
 from __future__ import annotations
-
+from scipy.stats import wilcoxon
 import json
 import time
 import warnings
@@ -41,7 +41,7 @@ ART, OUT = ROOT / "artifacts", ROOT / "results"
 SEED = 42
 N_ALERT, N_RANDOM = 400, 600      # ~1,000 instances, as the proposal specifies
 N_LIME = 120                      # LIME is far slower; subsample with CIs
-N_STABILITY = 80
+N_STABILITY = 1000      # the proposal promises >= 1,000 instances per metric
 TOP_K = 5
 CURVE_K = 20            # fidelity curve length; identical across datasets
 
@@ -142,13 +142,19 @@ def main() -> int:
              ("RandomForest", "XGBoost")]
     cross = {}
     for a, b in pairs:
-        rho = bootstrap_ci([rank_agreement(shap_vals[a][i], shap_vals[b][i])
-                            for i in range(N_ALERT)])
+        rhos = np.array([rank_agreement(shap_vals[a][i], shap_vals[b][i])
+                         for i in range(N_ALERT)])
+        rhos = rhos[np.isfinite(rhos)]
+        rho = bootstrap_ci(rhos)
         jac = bootstrap_ci([jaccard_at_k(shap_vals[a][i], shap_vals[b][i], TOP_K)
                             for i in range(N_ALERT)])
+        stat, p = wilcoxon(rhos - 1.0, alternative="less")
+        d = float((1.0 - rhos.mean()) / (rhos.std(ddof=1) or 1e-9))
         print(f"  {a[:12]:>12} vs {b[:12]:<14} rho {rho[0]:>6.3f}  "
-              f"Jaccard@{TOP_K} {jac[0]:>5.3f}")
-        cross[f"{a}|{b}"] = {"spearman": rho, "jaccard": jac}
+              f"Jaccard@{TOP_K} {jac[0]:>5.3f}  p {p:.2e}  d {d:.2f}")
+        cross[f"{a}|{b}"] = {"spearman": rho, "jaccard": jac,
+                             "p_value": float(p), "cohens_d": d,
+                             "n": int(len(rhos))}
 
     # ---- which features does each model name most often? -------------------
     print("\n  --- most-named feature in the alert queue ---")
@@ -163,7 +169,8 @@ def main() -> int:
 
     (OUT / "s2_explanation_quality_ulb.json").write_text(
         json.dumps({"seed": SEED, "n_alert": N_ALERT, "n_random": N_RANDOM,
-                    "n_lime": N_LIME, "per_model": report,
+                    "n_lime": N_LIME, "n_stability": N_STABILITY,
+                    "curve_k": CURVE_K, "top_k": TOP_K, "per_model": report,
                     "cross_model": cross, "top_features": named},
                    indent=2, default=float), encoding="utf-8")
     print(f"\n  wrote results/s2_explanation_quality_ulb.json  ({time.time() - t0:.0f}s)")

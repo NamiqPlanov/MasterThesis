@@ -18,36 +18,40 @@ Checks that the measures recover importances planted by construction. If any of 
 
 ## S1 — baseline models (time-ordered splits)
 
-| Dataset | Model | AUC-PR | ROC-AUC | Recall @0.5% budget |
-|---|---|---|---|---|
-| ULB | LogisticRegression | 0.7677 | 0.9796 | 0.861 |
-| ULB | RandomForest | 0.8196 | 0.9529 | 0.833 |
-| ULB | XGBoost | 0.8050 | 0.9773 | 0.833 |
-| IEEE-CIS | LogisticRegression | 0.4139 | 0.8384 | 0.109 |
-| IEEE-CIS | RandomForest | 0.5154 | 0.8845 | 0.117 |
-| IEEE-CIS | XGBoost | 0.5756 | 0.8882 | 0.118 |
+An alert budget of *b* means the investigator reviews the top *b* fraction of test transactions, ranked by model score.
+
+| Dataset | Model | AUC-PR | ROC-AUC | Precision @0.5% | Recall @0.5% |
+|---|---|---|---|---|---|
+| ULB | LogisticRegression | 0.7677 | 0.9796 | 0.218 | 0.861 |
+| ULB | RandomForest | 0.8196 | 0.9529 | 0.211 | 0.833 |
+| ULB | XGBoost | 0.8050 | 0.9773 | 0.211 | 0.833 |
+| IEEE-CIS | LogisticRegression | 0.4139 | 0.8384 | 0.913 | 0.109 |
+| IEEE-CIS | RandomForest | 0.5154 | 0.8845 | 0.980 | 0.117 |
+| IEEE-CIS | XGBoost | 0.5756 | 0.8882 | 0.984 | 0.118 |
 
 ## S2 — explanation quality
 
 | Dataset | Model | Fidelity (alerts) | Max-sensitivity | SHAP vs LIME ρ | Jaccard@5 |
 |---|---|---|---|---|---|
-| ULB | LogisticRegression | 0.645 [0.622, 0.669] | 0.039 [0.038, 0.040] | 0.701 [0.684, 0.719] | 0.460 [0.412, 0.505] |
-| ULB | RandomForest | 0.170 [0.145, 0.196] | 0.087 [0.072, 0.104] | 0.512 [0.486, 0.537] | 0.483 [0.445, 0.522] |
-| ULB | XGBoost | 0.218 [0.182, 0.255] | 0.085 [0.064, 0.112] | 0.301 [0.273, 0.327] | 0.260 [0.237, 0.283] |
-| IEEE-CIS | LogisticRegression | 0.128 [0.111, 0.146] | 0.035 [0.034, 0.035] | — | — |
-| IEEE-CIS | RandomForest | 0.166 [0.157, 0.176] | 0.269 [0.251, 0.287] | — | — |
-| IEEE-CIS | XGBoost | 0.113 [0.102, 0.124] | 0.603 [0.574, 0.634] | — | — |
+| ULB | LogisticRegression | 0.645 [0.622, 0.669] | 0.039 [0.038, 0.039] | 0.701 [0.684, 0.719] | 0.460 [0.412, 0.505] |
+| ULB | RandomForest | 0.170 [0.145, 0.196] | 0.061 [0.057, 0.064] | 0.512 [0.486, 0.537] | 0.483 [0.445, 0.522] |
+| ULB | XGBoost | 0.218 [0.182, 0.255] | 0.123 [0.117, 0.130] | 0.301 [0.273, 0.327] | 0.260 [0.237, 0.283] |
+| IEEE-CIS | LogisticRegression | 0.127 [0.111, 0.145] | 0.038 [0.038, 0.038] | — | — |
+| IEEE-CIS | RandomForest | 0.155 [0.146, 0.163] | 0.204 [0.199, 0.210] | — | — |
+| IEEE-CIS | XGBoost | 0.113 [0.102, 0.124] | 0.960 [0.932, 0.990] | — | — |
 
 ### Do different models explain the same alert the same way?
 
-| Dataset | Pair | Spearman | Jaccard@5 |
-|---|---|---|---|
-| ULB | LogisticRegression vs RandomForest | 0.352 [0.335, 0.369] | 0.329 [0.309, 0.349] |
-| ULB | LogisticRegression vs XGBoost | 0.290 [0.277, 0.304] | 0.246 [0.234, 0.259] |
-| ULB | RandomForest vs XGBoost | 0.529 [0.514, 0.543] | 0.385 [0.371, 0.399] |
-| IEEE-CIS | LogisticRegression vs RandomForest | 0.553 [0.548, 0.557] | 0.013 [0.009, 0.017] |
-| IEEE-CIS | LogisticRegression vs XGBoost | 0.313 [0.308, 0.318] | 0.055 [0.048, 0.063] |
-| IEEE-CIS | RandomForest vs XGBoost | 0.557 [0.552, 0.561] | 0.216 [0.206, 0.227] |
+H0: the two models rank the alert's features identically. With n = 400 the p-value is almost guaranteed to be small, so Cohen's d carries the argument.
+
+| Dataset | Pair | Spearman | Jaccard@5 | Wilcoxon p | Cohen's d |
+|---|---|---|---|---|---|
+| ULB | LogisticRegression vs RandomForest | 0.352 [0.335, 0.369] | 0.329 [0.309, 0.349] | 1.36e-67 | 3.70 |
+| ULB | LogisticRegression vs XGBoost | 0.290 [0.277, 0.304] | 0.246 [0.234, 0.259] | 1.36e-67 | 4.92 |
+| ULB | RandomForest vs XGBoost | 0.529 [0.514, 0.543] | 0.385 [0.371, 0.399] | 1.36e-67 | 3.30 |
+| IEEE-CIS | LogisticRegression vs RandomForest | 0.553 [0.548, 0.557] | 0.013 [0.009, 0.017] | 1.37e-67 | 9.94 |
+| IEEE-CIS | LogisticRegression vs XGBoost | 0.313 [0.308, 0.318] | 0.055 [0.048, 0.063] | 1.37e-67 | 12.41 |
+| IEEE-CIS | RandomForest vs XGBoost | 0.557 [0.552, 0.561] | 0.216 [0.206, 0.227] | 1.37e-67 | 9.86 |
 
 ## S3 — does resampling change the explanation?
 
@@ -105,6 +109,28 @@ AUC-PR spread across regimes: **0.0624**
 | smote | C1 (65%), M4 (18%), V258 (15%) |
 
 H0 (rankings invariant to regime): **REJECTED**
+
+## S5 — is the explanation stable across retraining seeds?
+
+A control for S3. S2's max-sensitivity perturbs the *input*; this perturbs the *seed*, holding the data fixed. 10 seeds, 400 alerts, reference seed 42.
+
+| Seed | ρ vs reference | Jaccard@5 | Cohen's d |
+|---|---|---|---|
+| 7 | 0.882 [0.877, 0.887] | 0.743 [0.725, 0.761] | 2.41 |
+| 13 | 0.876 [0.872, 0.881] | 0.710 [0.692, 0.728] | 2.47 |
+| 21 | 0.875 [0.871, 0.881] | 0.696 [0.679, 0.712] | 2.46 |
+| 34 | 0.877 [0.872, 0.882] | 0.746 [0.728, 0.764] | 2.35 |
+| 55 | 0.866 [0.861, 0.872] | 0.692 [0.673, 0.711] | 2.49 |
+| 89 | 0.851 [0.845, 0.857] | 0.700 [0.681, 0.718] | 2.40 |
+| 101 | 0.874 [0.869, 0.879] | 0.700 [0.680, 0.718] | 2.32 |
+| 202 | 0.873 [0.868, 0.878] | 0.699 [0.681, 0.717] | 2.48 |
+| 303 | 0.882 [0.878, 0.887] | 0.737 [0.719, 0.755] | 2.43 |
+
+Mean Spearman across seeds: **0.873**
+
+AUC-PR spread across seeds: **0.0134**
+
+**The comparison that matters.** Changing the training seed moves the ranking to ρ = 0.873; changing the resampling regime moves it to ρ = 0.446. The divergence in S3 is therefore caused by the imbalance strategy, not by stochastic training.
 
 ## Objective 4 — can an investigator act on the explanation?
 
