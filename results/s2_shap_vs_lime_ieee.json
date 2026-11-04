@@ -1,0 +1,88 @@
+{
+  "seed": 42,
+  "n_lime": 120,
+  "lime_samples": 2000,
+  "top_k": 5,
+  "n_features": 390,
+  "lime_default_kernel_width": 14.811313243598622,
+  "kernel_multipliers_searched": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "kernel_selected_per_instance": true,
+  "min_local_r2": 0.5,
+  "xgboost_input_view": "median-imputed (LIME cannot derive perturbation statistics from NaN)",
+  "per_model": {
+    "LogisticRegression": {
+      "shap_vs_lime_spearman": [
+        0.41328742194060175,
+        0.40686779009993657,
+        0.42034856266018367
+      ],
+      "shap_vs_lime_jaccard": [
+        0.10694444444444447,
+        0.08911458333333334,
+        0.12476851851851851
+      ],
+      "lime_local_r2_median": 0.8262525105551501,
+      "lime_local_r2_median_at_default_width": 0.00598326417797318,
+      "kernel_multiplier_counts": {
+        "1x": 7,
+        "2x": 69,
+        "3x": 34,
+        "4x": 10
+      },
+      "n_meeting_r2_floor": 120,
+      "n_defined": 120,
+      "n_total": 120
+    },
+    "RandomForest": {
+      "shap_vs_lime_spearman": [
+        0.39870437058447533,
+        0.37700736146814606,
+        0.41857698725362164
+      ],
+      "shap_vs_lime_jaccard": [
+        0.12189153439153441,
+        0.10290922619047621,
+        0.14470982142857144
+      ],
+      "lime_local_r2_median": 0.9947202384160743,
+      "lime_local_r2_median_at_default_width": 0.009901131228763294,
+      "kernel_multiplier_counts": {
+        "1x": 40,
+        "2x": 69,
+        "3x": 9,
+        "4x": 2
+      },
+      "n_meeting_r2_floor": 120,
+      "n_defined": 120,
+      "n_total": 120
+    },
+    "XGBoost": {
+      "shap_vs_lime_spearman": [
+        0.23067526471606703,
+        0.2160786933029852,
+        0.2434424286142605
+      ],
+      "shap_vs_lime_jaccard": [
+        0.049768518518518524,
+        0.03795717592592593,
+        0.0625
+      ],
+      "lime_local_r2_median": 0.9981053753591027,
+      "lime_local_r2_median_at_default_width": 0.009923303718726961,
+      "kernel_multiplier_counts": {
+        "1x": 36,
+        "2x": 73,
+        "3x": 9,
+        "4x": 2
+      },
+      "n_meeting_r2_floor": 120,
+      "n_defined": 120,
+      "n_total": 120
+    }
+  }
+}

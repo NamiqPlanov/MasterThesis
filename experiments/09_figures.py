@@ -131,32 +131,57 @@ if s3:
     made += 1
 
 # --- Figure 3: do two explainers agree? -----------------------------------
+# ULB's LIME lives in the S2 file; IEEE-CIS's lives in 13_*'s own file,
+# because it needs a per-instance kernel search that 06_* does not run.
 ulb = load("s2_explanation_quality_ulb.json")
+ieee_lime = load("s2_shap_vs_lime_ieee.json")
+panels = []
 if ulb:
-    models = list(ulb["per_model"])
-    rho = [ulb["per_model"][m]["shap_vs_lime_spearman"][0] for m in models]
-    jac = [ulb["per_model"][m]["shap_vs_lime_jaccard"][0] for m in models]
-    x = np.arange(len(models))
-    w = 0.36
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
-    b1 = ax.bar(x - w / 2, rho, w, color=BLUE, label="Spearman (all features)")
-    b2 = ax.bar(x + w / 2, jac, w, color=AQUA, label="Jaccard@5 (top features)")
-    for rects, vals in ((b1, rho), (b2, jac)):
-        for rect, v in zip(rects, vals):
-            ax.annotate(f"{v:.2f}", (rect.get_x() + rect.get_width() / 2, v),
-                        xytext=(0, 4), textcoords="offset points",
-                        ha="center", fontsize=9, color=INK2)
-    ax.axhline(1.0, color=AXIS, linewidth=1)
-    ax.annotate("perfect agreement", (len(models) - 0.5, 1.0), xytext=(0, 4),
-                textcoords="offset points", ha="right", fontsize=8, color=MUTED)
-    ax.set_xticks(x)
-    ax.set_xticklabels([m.replace("Regression", " Reg.") for m in models])
-    ax.set_ylabel("agreement (0–1)")
-    ax.set_ylim(0, 1.15)
-    ax.legend(loc="upper left", fontsize=9, labelcolor=INK2)
-    ax.set_title("SHAP and LIME explaining the same model and the same alert",
-                 color=INK, loc="left")
-    save(fig, "fig3_explainer_agreement", "SHAP vs LIME on ULB (S2)")
+    panels.append(("ULB (30 features)", ulb["per_model"]))
+if ieee_lime:
+    panels.append(("IEEE-CIS (390 features)", ieee_lime["per_model"]))
+if panels:
+    fig, axes = plt.subplots(1, len(panels), figsize=(4.9 * len(panels), 3.7),
+                             squeeze=False)
+    for ax, (title, per_model) in zip(axes[0], panels):
+        models = [m for m in per_model
+                  if per_model[m].get("shap_vs_lime_spearman")]
+        rho = [per_model[m]["shap_vs_lime_spearman"][0] for m in models]
+        jac = [per_model[m]["shap_vs_lime_jaccard"][0] for m in models]
+        x = np.arange(len(models))
+        w = 0.36
+        b1 = ax.bar(x - w / 2, rho, w, color=BLUE,
+                    label="Spearman (all features)")
+        b2 = ax.bar(x + w / 2, jac, w, color=AQUA,
+                    label="Jaccard@5 (top features)")
+        for rects, vals in ((b1, rho), (b2, jac)):
+            for rect, v in zip(rects, vals):
+                ax.annotate(f"{v:.2f}",
+                            (rect.get_x() + rect.get_width() / 2, v),
+                            xytext=(0, 4), textcoords="offset points",
+                            ha="center", fontsize=9, color=INK2)
+        ax.axhline(1.0, color=AXIS, linewidth=1)
+        ax.annotate("perfect agreement", (1.0, 1.0),
+                    xycoords=("axes fraction", "data"), xytext=(-4, 4),
+                    textcoords="offset points", ha="right", fontsize=8,
+                    color=MUTED)
+        ax.set_xticks(x)
+        ax.set_xticklabels([m.replace("Regression", " Reg.") for m in models],
+                           fontsize=9)
+        ax.set_ylabel("agreement (0–1)")
+        ax.set_ylim(0, 1.18)
+        ax.set_title(title, color=INK, loc="left")
+    axes[0][0].legend(loc="upper left", fontsize=9, labelcolor=INK2)
+    fig.suptitle("SHAP and LIME explaining the same model and the same alert",
+                 color=INK, fontsize=12, x=0.012, ha="left", y=1.04)
+    # the point of the pairing: rank correlation holds up where top-5 does not
+    fig.text(0.012, -0.07,
+             "Rank correlation is computed over all features; Jaccard@5 over "
+             "the five an analyst would read. The gap between them widens with "
+             "dimensionality:\nthe two explainers order the long tail "
+             "similarly while disagreeing about what matters.",
+             fontsize=9, color=MUTED, ha="left")
+    save(fig, "fig3_explainer_agreement", "SHAP vs LIME, both datasets (S2)")
     made += 1
 
 # --- Figure 4: can an investigator act on it? -----------------------------

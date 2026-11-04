@@ -74,20 +74,72 @@ lines.append("")
 
 # ------------------------------------------------- S2 explanation quality
 lines += ["## S2 — explanation quality", "",
-          "| Dataset | Model | Fidelity (alerts) | Max-sensitivity | "
-          "SHAP vs LIME ρ | Jaccard@5 |", "|---|---|---|---|---|---|"]
+          "Fidelity is reported on both populations because they behave "
+          "differently. On ULB the random sample sits near zero because the "
+          "model scores ~1e-6 there and deletion has no probability mass to "
+          "remove. On IEEE-CIS the random sample scores 0.05-0.34, so that "
+          "explanation does not apply: both tree ensembles score NEGATIVE "
+          "with intervals excluding zero, meaning deleting the features SHAP "
+          "ranked highest moves the fraud score up.", "",
+          "| Dataset | Model | Fidelity (alerts) | Fidelity (random) | "
+          "Max-sensitivity | SHAP vs LIME ρ | Jaccard@5 |",
+          "|---|---|---|---|---|---|---|"]
+# LIME on IEEE-CIS lives in its own file (13_*), because it needs a kernel
+# search that 06_* does not; merge it in so the table reads as one experiment
+# and 14_* supplies IEEE-CIS's random-sample fidelity, which the completed
+# run of 06_* predates
+side_files = {"IEEE-CIS": [load("s2_shap_vs_lime_ieee.json"),
+                           load("s2_fidelity_random_ieee.json")]}
 for tag, fn in (("ULB", "s2_explanation_quality_ulb.json"),
                 ("IEEE-CIS", "s2_explanation_quality_ieee.json")):
     d = load(fn)
     if not d:
         continue
+    sides = [s for s in side_files.get(tag, []) if s]
     for model, r in d["per_model"].items():
+        def pick(key, r=r, sides=sides, model=model):
+            """The main file's value, else whichever side file carries it."""
+            if r.get(key):
+                return r[key]
+            for s in sides:
+                v = s["per_model"].get(model, {}).get(key)
+                if v:
+                    return v
+            return None
         lines.append(
             f"| {tag} | {model} | {ci(r.get('fidelity_alert'))} | "
+            f"{ci(pick('fidelity_random'))} | "
             f"{ci(r.get('max_sensitivity'))} | "
-            f"{ci(r.get('shap_vs_lime_spearman'))} | "
-            f"{ci(r.get('shap_vs_lime_jaccard'))} |")
+            f"{ci(pick('shap_vs_lime_spearman'))} | "
+            f"{ci(pick('shap_vs_lime_jaccard'))} |")
 lines.append("")
+
+# ------------------------------------------- LIME surrogate fit on IEEE-CIS
+lime_i = load("s2_shap_vs_lime_ieee.json")
+if lime_i:
+    lines += ["### Was LIME's local surrogate usable at 390 features?", "",
+              "LIME weights perturbations by exp(-D^2/w^2) with w defaulting "
+              f"to sqrt(d)*0.75 = {lime_i['lime_default_kernel_width']:.2f}. "
+              "At the head of the alert queue the model's response surface is "
+              "locally flat, so a narrow kernel draws only perturbations with "
+              "identical output and the regression returns noise. The width is "
+              "therefore chosen per instance by maximising the surrogate's "
+              f"local R^2 over multipliers "
+              f"{lime_i['kernel_multipliers_searched']}; instances whose best "
+              f"surrogate explains less than "
+              f"{lime_i['min_local_r2'] * 100:.0f}% of local variance are "
+              "excluded. The default-width column shows what copying ULB's "
+              "settings would have produced.", "",
+              "| Model | Local R² (tuned) | Local R² (default width) | "
+              "Met R² floor | Widths chosen |", "|---|---|---|---|---|"]
+    for model, r in lime_i["per_model"].items():
+        widths = ", ".join(f"{k} {v}" for k, v in
+                           r["kernel_multiplier_counts"].items() if v)
+        lines.append(
+            f"| {model} | {r['lime_local_r2_median']:.3f} | "
+            f"{r['lime_local_r2_median_at_default_width']:.3f} | "
+            f"{r['n_meeting_r2_floor']} of {r['n_total']} | {widths} |")
+    lines.append("")
 
 # cross-model agreement
 lines += ["### Do different models explain the same alert the same way?", "",

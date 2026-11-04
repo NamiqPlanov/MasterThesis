@@ -31,14 +31,26 @@ An alert budget of *b* means the investigator reviews the top *b* fraction of te
 
 ## S2 — explanation quality
 
-| Dataset | Model | Fidelity (alerts) | Max-sensitivity | SHAP vs LIME ρ | Jaccard@5 |
-|---|---|---|---|---|---|
-| ULB | LogisticRegression | 0.645 [0.622, 0.669] | 0.039 [0.038, 0.039] | 0.701 [0.684, 0.719] | 0.460 [0.412, 0.505] |
-| ULB | RandomForest | 0.170 [0.145, 0.196] | 0.061 [0.057, 0.064] | 0.512 [0.486, 0.537] | 0.483 [0.445, 0.522] |
-| ULB | XGBoost | 0.218 [0.182, 0.255] | 0.123 [0.117, 0.130] | 0.301 [0.273, 0.327] | 0.260 [0.237, 0.283] |
-| IEEE-CIS | LogisticRegression | 0.127 [0.111, 0.145] | 0.038 [0.038, 0.038] | — | — |
-| IEEE-CIS | RandomForest | 0.155 [0.146, 0.163] | 0.204 [0.199, 0.210] | — | — |
-| IEEE-CIS | XGBoost | 0.113 [0.102, 0.124] | 0.960 [0.932, 0.990] | — | — |
+Fidelity is reported on both populations because they behave differently. On ULB the random sample sits near zero because the model scores ~1e-6 there and deletion has no probability mass to remove. On IEEE-CIS the random sample scores 0.05-0.34, so that explanation does not apply: both tree ensembles score NEGATIVE with intervals excluding zero, meaning deleting the features SHAP ranked highest moves the fraud score up.
+
+| Dataset | Model | Fidelity (alerts) | Fidelity (random) | Max-sensitivity | SHAP vs LIME ρ | Jaccard@5 |
+|---|---|---|---|---|---|---|
+| ULB | LogisticRegression | 0.645 [0.622, 0.669] | 0.032 [0.024, 0.040] | 0.039 [0.038, 0.039] | 0.651 [0.629, 0.672] | 0.393 [0.346, 0.440] |
+| ULB | RandomForest | 0.170 [0.145, 0.196] | -0.000 [-0.000, 0.000] | 0.061 [0.057, 0.064] | 0.511 [0.484, 0.536] | 0.483 [0.446, 0.521] |
+| ULB | XGBoost | 0.218 [0.182, 0.255] | -0.000 [-0.000, -0.000] | 0.123 [0.117, 0.130] | 0.309 [0.282, 0.337] | 0.266 [0.243, 0.289] |
+| IEEE-CIS | LogisticRegression | 0.127 [0.111, 0.145] | 0.011 [-0.005, 0.028] | 0.038 [0.038, 0.038] | 0.413 [0.407, 0.420] | 0.107 [0.089, 0.125] |
+| IEEE-CIS | RandomForest | 0.155 [0.146, 0.163] | -0.052 [-0.059, -0.045] | 0.204 [0.199, 0.210] | 0.399 [0.377, 0.419] | 0.122 [0.103, 0.145] |
+| IEEE-CIS | XGBoost | 0.113 [0.102, 0.124] | -0.100 [-0.115, -0.084] | 0.960 [0.932, 0.990] | 0.231 [0.216, 0.243] | 0.050 [0.038, 0.062] |
+
+### Was LIME's local surrogate usable at 390 features?
+
+LIME weights perturbations by exp(-D^2/w^2) with w defaulting to sqrt(d)*0.75 = 14.81. At the head of the alert queue the model's response surface is locally flat, so a narrow kernel draws only perturbations with identical output and the regression returns noise. The width is therefore chosen per instance by maximising the surrogate's local R^2 over multipliers [1, 2, 3, 4]; instances whose best surrogate explains less than 50% of local variance are excluded. The default-width column shows what copying ULB's settings would have produced.
+
+| Model | Local R² (tuned) | Local R² (default width) | Met R² floor | Widths chosen |
+|---|---|---|---|---|
+| LogisticRegression | 0.826 | 0.006 | 120 of 120 | 1x 7, 2x 69, 3x 34, 4x 10 |
+| RandomForest | 0.995 | 0.010 | 120 of 120 | 1x 40, 2x 69, 3x 9, 4x 2 |
+| XGBoost | 0.998 | 0.010 | 120 of 120 | 1x 36, 2x 73, 3x 9, 4x 2 |
 
 ### Do different models explain the same alert the same way?
 

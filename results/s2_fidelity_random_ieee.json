@@ -1,0 +1,32 @@
+{
+  "seed": 42,
+  "n_random": 600,
+  "curve_k": 20,
+  "n_features": 390,
+  "per_model": {
+    "LogisticRegression": {
+      "fidelity_random": [
+        0.01075280258872219,
+        -0.0053443125066135085,
+        0.027513197652808696
+      ],
+      "median_predicted_score": 0.33887481689453125
+    },
+    "RandomForest": {
+      "fidelity_random": [
+        -0.05195572082217982,
+        -0.05923244760746645,
+        -0.04466001524287713
+      ],
+      "median_predicted_score": 0.08791768830178143
+    },
+    "XGBoost": {
+      "fidelity_random": [
+        -0.09954853170834892,
+        -0.11461151868360174,
+        -0.08448349692347115
+      ],
+      "median_predicted_score": 0.04514326527714729
+    }
+  }
+}

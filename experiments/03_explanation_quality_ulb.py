@@ -27,7 +27,6 @@ from pathlib import Path
 import joblib
 import numpy as np
 import shap
-from lime.lime_tabular import LimeTabularExplainer
 
 import sys
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,15 +34,20 @@ sys.path.insert(0, str(ROOT / "src"))
 from xai_metrics import (  # noqa: E402
     bootstrap_ci, deletion_fidelity, jaccard_at_k, max_sensitivity, rank_agreement,
 )
+from lime_fit import (  # noqa: E402
+    KERNEL_MULTS, best_fit_attribution, build_explainers, default_kernel_width,
+)
 
 warnings.filterwarnings("ignore")
 ART, OUT = ROOT / "artifacts", ROOT / "results"
 SEED = 42
 N_ALERT, N_RANDOM = 400, 600      # ~1,000 instances, as the proposal specifies
 N_LIME = 120                      # LIME is far slower; subsample with CIs
+LIME_SAMPLES = 800                # 27:1 against d=30; see 13_* for IEEE's ratio
 N_STABILITY = 1000      # the proposal promises >= 1,000 instances per metric
 TOP_K = 5
 CURVE_K = 20            # fidelity curve length; identical across datasets
+MIN_R2 = 0.5            # drop attributions from surrogates that do not fit
 
 
 def main() -> int:
@@ -70,9 +74,12 @@ def main() -> int:
           f"({N_ALERT} alert queue + {N_RANDOM} random)")
     print(f"  frauds in alert set : {int(yte[alert_idx].sum())} of {int(yte.sum())}")
 
-    lime_exp = LimeTabularExplainer(
-        training_data=Xte, feature_names=cols, class_names=["legit", "fraud"],
-        discretize_continuous=False, random_state=SEED, mode="classification")
+    # one explainer per candidate kernel width; the width is chosen per
+    # instance by local R^2, identically to 13_* on IEEE-CIS
+    lime_exps = build_explainers(Xte, cols, SEED)
+    print(f"  LIME kernel: default sqrt(d)*0.75 = "
+          f"{default_kernel_width(len(cols)):.2f}, searching "
+          f"{[f'{m}x' for m in KERNEL_MULTS]} per instance")
 
     shap_vals, report = {}, {}
     for name, model in models.items():
@@ -107,15 +114,19 @@ def main() -> int:
 
         # SHAP vs LIME on the SAME model and the same instances
         agree_rho, agree_jac = [], []
+        lime_r2, lime_width, naive_r2 = [], [], []
         for i in range(N_LIME):
             j = idx_all[i]
-            e = lime_exp.explain_instance(
-                Xte[j], model.predict_proba, num_features=len(cols), num_samples=800)
-            lv = np.zeros(len(cols))
-            for fidx, w in e.as_map()[1]:
-                lv[fidx] = w
-            agree_rho.append(rank_agreement(sv[i], lv))
-            agree_jac.append(jaccard_at_k(sv[i], lv, TOP_K))
+            lv, r2, mult, by_width = best_fit_attribution(
+                lime_exps, Xte[j], model.predict_proba, LIME_SAMPLES)
+            lime_r2.append(r2)
+            lime_width.append(mult)
+            naive_r2.append(by_width[1])
+            # an attribution from a surrogate that explains none of the local
+            # behaviour is not evidence about the model
+            if r2 >= MIN_R2:
+                agree_rho.append(rank_agreement(sv[i], lv))
+                agree_jac.append(jaccard_at_k(sv[i], lv, TOP_K))
 
         fa_a, fa_r = bootstrap_ci(faith_alert), bootstrap_ci(faith_rand)
         st = bootstrap_ci(stab)
@@ -129,11 +140,27 @@ def main() -> int:
                        ("SHAP vs LIME, Spearman", ar),
                        (f"SHAP vs LIME, Jaccard@{TOP_K}", aj)):
             print(f"  {lbl:<38}{v[0]:>8.3f}     [{v[1]:.3f}, {v[2]:.3f}]")
+        hist = {f"{m}x": int(np.sum(np.array(lime_width) == m))
+                for m in KERNEL_MULTS}
+        print(f"  {'LIME local R2 (median, tuned)':<38}"
+              f"{np.median(lime_r2):>8.3f}")
+        print(f"  {'LIME local R2 (median, at 1x)':<38}"
+              f"{np.median(naive_r2):>8.3f}")
+        print(f"  {'instances meeting the R2 floor':<38}"
+              f"{len(agree_rho):>8d} of {N_LIME}")
+        print("  widths chosen: " + ", ".join(
+            f"{k} {v}" for k, v in hist.items() if v))
 
         report[name] = {"fidelity_alert": fa_a, "fidelity_random": fa_r,
                         "max_sensitivity": st,
                         "shap_vs_lime_spearman": ar,
-                        "shap_vs_lime_jaccard": aj}
+                        "shap_vs_lime_jaccard": aj,
+                        "lime_local_r2_median": float(np.median(lime_r2)),
+                        "lime_local_r2_median_at_default_width":
+                            float(np.median(naive_r2)),
+                        "kernel_multiplier_counts": hist,
+                        "n_meeting_r2_floor": len(agree_rho),
+                        "n_total": N_LIME}
 
     # ---- do different models tell the same story about the same alert? -----
     print("\n  --- cross-model agreement (alert queue only) ---")
@@ -169,7 +196,13 @@ def main() -> int:
 
     (OUT / "s2_explanation_quality_ulb.json").write_text(
         json.dumps({"seed": SEED, "n_alert": N_ALERT, "n_random": N_RANDOM,
-                    "n_lime": N_LIME, "n_stability": N_STABILITY,
+                    "n_lime": N_LIME, "lime_samples": LIME_SAMPLES,
+                    "lime_default_kernel_width":
+                        default_kernel_width(len(cols)),
+                    "kernel_multipliers_searched": list(KERNEL_MULTS),
+                    "kernel_selected_per_instance": True,
+                    "min_local_r2": MIN_R2,
+                    "n_stability": N_STABILITY,
                     "curve_k": CURVE_K, "top_k": TOP_K, "per_model": report,
                     "cross_model": cross, "top_features": named},
                    indent=2, default=float), encoding="utf-8")

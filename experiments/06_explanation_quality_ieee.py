@@ -109,6 +109,13 @@ def main() -> int:
 
         fa = bootstrap_ci([deletion_fidelity(predict, Xm[idx_all[i]], sv[i], base, k=CURVE_K)
                            for i in range(N_ALERT)])
+        # the random sample matters as much as the alert queue: a fidelity
+        # figure quoted over ordinary transactions describes a regime where the
+        # score is ~1e-6 and deletion has almost no probability mass to remove.
+        # 03_* reports both on ULB, so this one must report both too. Added
+        # after the first full run; 14_* supplies the number for that run.
+        fr = bootstrap_ci([deletion_fidelity(predict, Xm[idx_all[i]], sv[i], base, k=CURVE_K)
+                           for i in range(N_ALERT, len(idx_all))])
 
         def explain_batch(a, e=ex):
             v = np.asarray(e.shap_values(a))
@@ -134,13 +141,15 @@ def main() -> int:
         order = np.argsort(-counts)[:4]
         print(f"\n  --- {name}  ({time.time() - t:.0f}s) ---")
         print(f"  {'fidelity (alert queue)':<34}{fa[0]:>8.3f}  [{fa[1]:.3f}, {fa[2]:.3f}]")
+        print(f"  {'fidelity (random sample)':<34}{fr[0]:>8.3f}  [{fr[1]:.3f}, {fr[2]:.3f}]")
         print(f"  {'max-sensitivity':<34}{st[0]:>8.3f}  [{st[1]:.3f}, {st[2]:.3f}]")
         print(f"  {'top-1 feature is SEMANTIC':<34}{share * 100:>7.1f}%")
         print(f"  {'top-5 features semantic (mean)':<34}{top5_share * 100:>7.1f}%")
         print("  most-named: " + ", ".join(
             f"{vals[o]} ({counts[o] * 100 / N_ALERT:.0f}%)" for o in order))
 
-        report[name] = {"fidelity_alert": fa, "max_sensitivity": st,
+        report[name] = {"fidelity_alert": fa, "fidelity_random": fr,
+                        "max_sensitivity": st,
                         "semantic_top1": share, "semantic_top5": top5_share,
                         "most_named": {str(vals[o]): int(counts[o]) for o in order}}
 
