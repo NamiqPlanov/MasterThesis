@@ -1,0 +1,229 @@
+{
+  "regimes": [
+    "natural",
+    "undersample",
+    "smote"
+  ],
+  "seeds": [
+    42,
+    7,
+    13
+  ],
+  "configs": {
+    "shallow": {
+      "n_estimators": 200,
+      "max_depth": 3,
+      "learning_rate": 0.1
+    },
+    "default": {
+      "n_estimators": 400,
+      "max_depth": 6,
+      "learning_rate": 0.1
+    },
+    "deep": {
+      "n_estimators": 400,
+      "max_depth": 10,
+      "learning_rate": 0.05
+    }
+  },
+  "n_alert": 400,
+  "top_k": 5,
+  "one_factor_summary": {
+    "seed_only": {
+      "n_pairs": 27,
+      "shap_spearman_mean": 0.7738492975734355,
+      "top5_changed_mean": 0.9926851851851852,
+      "score_spearman_mean": 0.9077917523702514,
+      "usage_cosine_mean": 0.967522950964124,
+      "auc_pr_delta_mean": 0.0075889560489793935,
+      "expected_value_delta_mean": 0.0
+    },
+    "regime_only": {
+      "n_pairs": 27,
+      "shap_spearman_mean": 0.5025718287809501,
+      "top5_changed_mean": 1.9012037037037037,
+      "score_spearman_mean": 0.6876103139735468,
+      "usage_cosine_mean": 0.9518344900070368,
+      "auc_pr_delta_mean": 0.013980084645492653,
+      "expected_value_delta_mean": 0.0
+    },
+    "config_only": {
+      "n_pairs": 27,
+      "shap_spearman_mean": 0.7397916615169118,
+      "top5_changed_mean": 1.2339814814814816,
+      "score_spearman_mean": 0.8399860248706583,
+      "usage_cosine_mean": 0.9891780169595796,
+      "auc_pr_delta_mean": 0.006786640531729533,
+      "expected_value_delta_mean": 0.0
+    }
+  },
+  "smote_manifold": {
+    "median_nn_distance_synthetic": 1.0588064022953698,
+    "median_nn_distance_real_fraud": 3.4576651738552275,
+    "ratio": 0.30622004996351787
+  },
+  "cells": {
+    "natural|42|shallow": {
+      "auc_pr": 0.8078659443853823,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|42|default": {
+      "auc_pr": 0.8049948424678584,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|42|deep": {
+      "auc_pr": 0.8091466684301165,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|7|shallow": {
+      "auc_pr": 0.8040516246751056,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|7|default": {
+      "auc_pr": 0.8120835497465236,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|7|deep": {
+      "auc_pr": 0.8110032202102497,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|13|shallow": {
+      "auc_pr": 0.7955256956033571,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|13|default": {
+      "auc_pr": 0.8184406189292612,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "natural|13|deep": {
+      "auc_pr": 0.8101342994288642,
+      "expected_value": 0.0,
+      "train_rows": 199364,
+      "train_fraud_rate": 0.0019261250777472363
+    },
+    "undersample|42|shallow": {
+      "auc_pr": 0.7698998721367719,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|42|default": {
+      "auc_pr": 0.7805822229032762,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|42|deep": {
+      "auc_pr": 0.7853546344088667,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|7|shallow": {
+      "auc_pr": 0.7762441414550579,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|7|default": {
+      "auc_pr": 0.7862108195019971,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|7|deep": {
+      "auc_pr": 0.7944696855593618,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|13|shallow": {
+      "auc_pr": 0.7965012679069249,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|13|default": {
+      "auc_pr": 0.800153182859825,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "undersample|13|deep": {
+      "auc_pr": 0.8047170563170771,
+      "expected_value": 0.0,
+      "train_rows": 768,
+      "train_fraud_rate": 0.5
+    },
+    "smote|42|shallow": {
+      "auc_pr": 0.7957022465224807,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|42|default": {
+      "auc_pr": 0.7992491617495363,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|42|deep": {
+      "auc_pr": 0.8030089978842064,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|7|shallow": {
+      "auc_pr": 0.8001166663047034,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|7|default": {
+      "auc_pr": 0.8005713963922755,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|7|deep": {
+      "auc_pr": 0.8039918536151204,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|13|shallow": {
+      "auc_pr": 0.8026707081515758,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|13|default": {
+      "auc_pr": 0.7999651613910116,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    },
+    "smote|13|deep": {
+      "auc_pr": 0.8034081007510863,
+      "expected_value": 0.0,
+      "train_rows": 397960,
+      "train_fraud_rate": 0.5
+    }
+  }
+}

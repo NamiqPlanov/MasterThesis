@@ -161,3 +161,14 @@ def bootstrap_ci(values, n_boot=2000, alpha=0.05, rng=None):
     means = [rng.choice(values, values.size, replace=True).mean() for _ in range(n_boot)]
     lo, hi = np.percentile(means, [100 * alpha / 2, 100 * (1 - alpha / 2)])
     return float(values.mean()), float(lo), float(hi)
+
+def topk_changed(a, b, k=5):
+    """How many of the top-k features differ between two attributions.
+
+    Reported alongside Jaccard because it is the number an investigator can
+    act on: "two of the five features you would read are different" is a
+    practical statement, where "Jaccard 0.43" is not.
+    """
+    top_a = set(np.argsort(-np.abs(np.asarray(a, float)))[:k])
+    top_b = set(np.argsort(-np.abs(np.asarray(b, float)))[:k])
+    return k - len(top_a & top_b)
