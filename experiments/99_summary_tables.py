@@ -143,22 +143,34 @@ if lime_i:
 
 # cross-model agreement
 lines += ["### Do different models explain the same alert the same way?", "",
-          "H0: the two models rank the alert's features identically. "
-          "With n = 400 the p-value is almost guaranteed to be small, so "
-          "Cohen's d carries the argument.", "",
-          "| Dataset | Pair | Spearman | Jaccard@5 | Wilcoxon p | Cohen's d |",
-          "|---|---|---|---|---|---|"]
+          "H0: the two models rank the alert's features identically. Rows are "
+          "ordered by effect size, not by significance: with n = 400 every "
+          "p-value is around 1e-67, which states only that the sample is "
+          "large, so it is reported last. **Top-5 changed** is how many of "
+          "the five features an analyst would read differ between the two "
+          "models, which is the quantity with an operational meaning. It is "
+          "derived exactly from Jaccard rather than estimated: with both top "
+          "sets of size k = 5, J = i/(10-i) for an intersection of size i, "
+          "so i = 10J/(1+J).", "",
+          "| Dataset | Pair | Cohen's d | Top-5 changed | Spearman | "
+          "Jaccard@5 | Wilcoxon p |",
+          "|---|---|---|---|---|---|---|"]
 for tag, fn in (("ULB", "s2_explanation_quality_ulb.json"),
                 ("IEEE-CIS", "s2_explanation_quality_ieee.json")):
     d = load(fn)
     if not d:
         continue
-    for pair, r in d.get("cross_model", {}).items():
+    for pair, r in sorted(d.get("cross_model", {}).items(),
+                          key=lambda kv: -kv[1].get("cohens_d", 0)):
         a, b = pair.split("|")
+        k = d.get("top_k", 5)
+        j = r["jaccard"][0]
+        # exact inverse of Jaccard when both top-k sets have size k
+        changed = k - (2 * k * j / (1 + j))
         p = f"{r['p_value']:.3g}" if "p_value" in r else "—"
         cd = f"{r['cohens_d']:.2f}" if "cohens_d" in r else "—"
-        lines.append(f"| {tag} | {a} vs {b} | {ci(r['spearman'])} | "
-                     f"{ci(r['jaccard'])} | {p} | {cd} |")
+        lines.append(f"| {tag} | {a} vs {b} | {cd} | {changed:.2f} of {k} | "
+                     f"{ci(r['spearman'])} | {ci(r['jaccard'])} | {p} |")
 lines.append("")
 
 # -------------------------------------------------------------- S3 imbalance

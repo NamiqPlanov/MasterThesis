@@ -50,6 +50,140 @@
               "random_expected_catches": 1.0794564797584354
             }
           },
+          "sweep": {
+            "b=0.0002": {
+              "k": 17,
+              "frauds": 108,
+              "k_over_F": 0.1574074074074074,
+              "caught": 16,
+              "precision": 0.9411764705882353,
+              "recall": 0.14814814814814814,
+              "max_precision": 1.0,
+              "max_recall": 0.1574074074074074,
+              "attainment": 0.9411764705882353,
+              "random_expected_catches": 0.021488009550226467
+            },
+            "b=0.0005": {
+              "k": 42,
+              "frauds": 108,
+              "k_over_F": 0.3888888888888889,
+              "caught": 41,
+              "precision": 0.9761904761904762,
+              "recall": 0.37962962962962965,
+              "max_precision": 1.0,
+              "max_recall": 0.3888888888888889,
+              "attainment": 0.9761904761904762,
+              "random_expected_catches": 0.05308802359467715
+            },
+            "b=0.001": {
+              "k": 85,
+              "frauds": 108,
+              "k_over_F": 0.7870370370370371,
+              "caught": 77,
+              "precision": 0.9058823529411765,
+              "recall": 0.7129629629629629,
+              "max_precision": 1.0,
+              "max_recall": 0.7870370370370371,
+              "attainment": 0.9058823529411765,
+              "random_expected_catches": 0.10744004775113233
+            },
+            "b=0.002": {
+              "k": 170,
+              "frauds": 108,
+              "k_over_F": 1.5740740740740742,
+              "caught": 86,
+              "precision": 0.5058823529411764,
+              "recall": 0.7962962962962963,
+              "max_precision": 0.6352941176470588,
+              "max_recall": 1.0,
+              "attainment": 0.7962962962962963,
+              "random_expected_catches": 0.21488009550226467
+            },
+            "b=0.003": {
+              "k": 256,
+              "frauds": 108,
+              "k_over_F": 2.3703703703703702,
+              "caught": 90,
+              "precision": 0.3515625,
+              "recall": 0.8333333333333334,
+              "max_precision": 0.421875,
+              "max_recall": 1.0,
+              "attainment": 0.8333333333333334,
+              "random_expected_catches": 0.32358414381517503
+            },
+            "b=0.005": {
+              "k": 427,
+              "frauds": 108,
+              "k_over_F": 3.9537037037037037,
+              "caught": 93,
+              "precision": 0.21779859484777517,
+              "recall": 0.8611111111111112,
+              "max_precision": 0.2529274004683841,
+              "max_recall": 1.0,
+              "attainment": 0.8611111111111112,
+              "random_expected_catches": 0.5397282398792177
+            },
+            "b=0.0075": {
+              "k": 640,
+              "frauds": 108,
+              "k_over_F": 5.925925925925926,
+              "caught": 93,
+              "precision": 0.1453125,
+              "recall": 0.8611111111111112,
+              "max_precision": 0.16875,
+              "max_recall": 1.0,
+              "attainment": 0.8611111111111112,
+              "random_expected_catches": 0.8089603595379375
+            },
+            "b=0.01": {
+              "k": 854,
+              "frauds": 108,
+              "k_over_F": 7.907407407407407,
+              "caught": 93,
+              "precision": 0.10889929742388758,
+              "recall": 0.8611111111111112,
+              "max_precision": 0.12646370023419204,
+              "max_recall": 1.0,
+              "attainment": 0.8611111111111112,
+              "random_expected_catches": 1.0794564797584354
+            },
+            "b=0.02": {
+              "k": 1708,
+              "frauds": 108,
+              "k_over_F": 15.814814814814815,
+              "caught": 95,
+              "precision": 0.05562060889929742,
+              "recall": 0.8796296296296297,
+              "max_precision": 0.06323185011709602,
+              "max_recall": 1.0,
+              "attainment": 0.8796296296296297,
+              "random_expected_catches": 2.158912959516871
+            },
+            "b=0.03": {
+              "k": 2563,
+              "frauds": 108,
+              "k_over_F": 23.73148148148148,
+              "caught": 96,
+              "precision": 0.03745610612563402,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.042138119391338276,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 3.2396334398370845
+            },
+            "b=0.05": {
+              "k": 4272,
+              "frauds": 108,
+              "k_over_F": 39.55555555555556,
+              "caught": 98,
+              "precision": 0.02294007490636704,
+              "recall": 0.9074074074074074,
+              "max_precision": 0.025280898876404494,
+              "max_recall": 1.0,
+              "attainment": 0.9074074074074074,
+              "random_expected_catches": 5.399810399915733
+            }
+          },
           "calibration": {
             "brier": 0.01730542476227779,
             "ece": 0.055965159397975,
@@ -195,6 +329,140 @@
               "random_expected_catches": 1.0794564797584354
             }
           },
+          "sweep": {
+            "b=0.0002": {
+              "k": 17,
+              "frauds": 108,
+              "k_over_F": 0.1574074074074074,
+              "caught": 17,
+              "precision": 1.0,
+              "recall": 0.1574074074074074,
+              "max_precision": 1.0,
+              "max_recall": 0.1574074074074074,
+              "attainment": 1.0,
+              "random_expected_catches": 0.021488009550226467
+            },
+            "b=0.0005": {
+              "k": 42,
+              "frauds": 108,
+              "k_over_F": 0.3888888888888889,
+              "caught": 42,
+              "precision": 1.0,
+              "recall": 0.3888888888888889,
+              "max_precision": 1.0,
+              "max_recall": 0.3888888888888889,
+              "attainment": 1.0,
+              "random_expected_catches": 0.05308802359467715
+            },
+            "b=0.001": {
+              "k": 85,
+              "frauds": 108,
+              "k_over_F": 0.7870370370370371,
+              "caught": 81,
+              "precision": 0.9529411764705882,
+              "recall": 0.75,
+              "max_precision": 1.0,
+              "max_recall": 0.7870370370370371,
+              "attainment": 0.9529411764705882,
+              "random_expected_catches": 0.10744004775113233
+            },
+            "b=0.002": {
+              "k": 170,
+              "frauds": 108,
+              "k_over_F": 1.5740740740740742,
+              "caught": 88,
+              "precision": 0.5176470588235295,
+              "recall": 0.8148148148148148,
+              "max_precision": 0.6352941176470588,
+              "max_recall": 1.0,
+              "attainment": 0.8148148148148148,
+              "random_expected_catches": 0.21488009550226467
+            },
+            "b=0.003": {
+              "k": 256,
+              "frauds": 108,
+              "k_over_F": 2.3703703703703702,
+              "caught": 89,
+              "precision": 0.34765625,
+              "recall": 0.8240740740740741,
+              "max_precision": 0.421875,
+              "max_recall": 1.0,
+              "attainment": 0.8240740740740741,
+              "random_expected_catches": 0.32358414381517503
+            },
+            "b=0.005": {
+              "k": 427,
+              "frauds": 108,
+              "k_over_F": 3.9537037037037037,
+              "caught": 90,
+              "precision": 0.2107728337236534,
+              "recall": 0.8333333333333334,
+              "max_precision": 0.2529274004683841,
+              "max_recall": 1.0,
+              "attainment": 0.8333333333333334,
+              "random_expected_catches": 0.5397282398792177
+            },
+            "b=0.0075": {
+              "k": 640,
+              "frauds": 108,
+              "k_over_F": 5.925925925925926,
+              "caught": 94,
+              "precision": 0.146875,
+              "recall": 0.8703703703703703,
+              "max_precision": 0.16875,
+              "max_recall": 1.0,
+              "attainment": 0.8703703703703703,
+              "random_expected_catches": 0.8089603595379375
+            },
+            "b=0.01": {
+              "k": 854,
+              "frauds": 108,
+              "k_over_F": 7.907407407407407,
+              "caught": 96,
+              "precision": 0.11241217798594848,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.12646370023419204,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 1.0794564797584354
+            },
+            "b=0.02": {
+              "k": 1708,
+              "frauds": 108,
+              "k_over_F": 15.814814814814815,
+              "caught": 96,
+              "precision": 0.05620608899297424,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.06323185011709602,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 2.158912959516871
+            },
+            "b=0.03": {
+              "k": 2563,
+              "frauds": 108,
+              "k_over_F": 23.73148148148148,
+              "caught": 97,
+              "precision": 0.03784627389777604,
+              "recall": 0.8981481481481481,
+              "max_precision": 0.042138119391338276,
+              "max_recall": 1.0,
+              "attainment": 0.8981481481481481,
+              "random_expected_catches": 3.2396334398370845
+            },
+            "b=0.05": {
+              "k": 4272,
+              "frauds": 108,
+              "k_over_F": 39.55555555555556,
+              "caught": 97,
+              "precision": 0.022705992509363296,
+              "recall": 0.8981481481481481,
+              "max_precision": 0.025280898876404494,
+              "max_recall": 1.0,
+              "attainment": 0.8981481481481481,
+              "random_expected_catches": 5.399810399915733
+            }
+          },
           "calibration": {
             "brier": 0.0003788863610384858,
             "ece": 0.00018748253394815817,
@@ -260,6 +528,140 @@
               "max_recall": 1.0,
               "attainment": 0.8611111111111112,
               "random_expected_catches": 1.0794564797584354
+            }
+          },
+          "sweep": {
+            "b=0.0002": {
+              "k": 17,
+              "frauds": 108,
+              "k_over_F": 0.1574074074074074,
+              "caught": 17,
+              "precision": 1.0,
+              "recall": 0.1574074074074074,
+              "max_precision": 1.0,
+              "max_recall": 0.1574074074074074,
+              "attainment": 1.0,
+              "random_expected_catches": 0.021488009550226467
+            },
+            "b=0.0005": {
+              "k": 42,
+              "frauds": 108,
+              "k_over_F": 0.3888888888888889,
+              "caught": 42,
+              "precision": 1.0,
+              "recall": 0.3888888888888889,
+              "max_precision": 1.0,
+              "max_recall": 0.3888888888888889,
+              "attainment": 1.0,
+              "random_expected_catches": 0.05308802359467715
+            },
+            "b=0.001": {
+              "k": 85,
+              "frauds": 108,
+              "k_over_F": 0.7870370370370371,
+              "caught": 80,
+              "precision": 0.9411764705882353,
+              "recall": 0.7407407407407407,
+              "max_precision": 1.0,
+              "max_recall": 0.7870370370370371,
+              "attainment": 0.9411764705882353,
+              "random_expected_catches": 0.10744004775113233
+            },
+            "b=0.002": {
+              "k": 170,
+              "frauds": 108,
+              "k_over_F": 1.5740740740740742,
+              "caught": 86,
+              "precision": 0.5058823529411764,
+              "recall": 0.7962962962962963,
+              "max_precision": 0.6352941176470588,
+              "max_recall": 1.0,
+              "attainment": 0.7962962962962963,
+              "random_expected_catches": 0.21488009550226467
+            },
+            "b=0.003": {
+              "k": 256,
+              "frauds": 108,
+              "k_over_F": 2.3703703703703702,
+              "caught": 89,
+              "precision": 0.34765625,
+              "recall": 0.8240740740740741,
+              "max_precision": 0.421875,
+              "max_recall": 1.0,
+              "attainment": 0.8240740740740741,
+              "random_expected_catches": 0.32358414381517503
+            },
+            "b=0.005": {
+              "k": 427,
+              "frauds": 108,
+              "k_over_F": 3.9537037037037037,
+              "caught": 90,
+              "precision": 0.2107728337236534,
+              "recall": 0.8333333333333334,
+              "max_precision": 0.2529274004683841,
+              "max_recall": 1.0,
+              "attainment": 0.8333333333333334,
+              "random_expected_catches": 0.5397282398792177
+            },
+            "b=0.0075": {
+              "k": 640,
+              "frauds": 108,
+              "k_over_F": 5.925925925925926,
+              "caught": 93,
+              "precision": 0.1453125,
+              "recall": 0.8611111111111112,
+              "max_precision": 0.16875,
+              "max_recall": 1.0,
+              "attainment": 0.8611111111111112,
+              "random_expected_catches": 0.8089603595379375
+            },
+            "b=0.01": {
+              "k": 854,
+              "frauds": 108,
+              "k_over_F": 7.907407407407407,
+              "caught": 93,
+              "precision": 0.10889929742388758,
+              "recall": 0.8611111111111112,
+              "max_precision": 0.12646370023419204,
+              "max_recall": 1.0,
+              "attainment": 0.8611111111111112,
+              "random_expected_catches": 1.0794564797584354
+            },
+            "b=0.02": {
+              "k": 1708,
+              "frauds": 108,
+              "k_over_F": 15.814814814814815,
+              "caught": 96,
+              "precision": 0.05620608899297424,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.06323185011709602,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 2.158912959516871
+            },
+            "b=0.03": {
+              "k": 2563,
+              "frauds": 108,
+              "k_over_F": 23.73148148148148,
+              "caught": 96,
+              "precision": 0.03745610612563402,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.042138119391338276,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 3.2396334398370845
+            },
+            "b=0.05": {
+              "k": 4272,
+              "frauds": 108,
+              "k_over_F": 39.55555555555556,
+              "caught": 96,
+              "precision": 0.02247191011235955,
+              "recall": 0.8888888888888888,
+              "max_precision": 0.025280898876404494,
+              "max_recall": 1.0,
+              "attainment": 0.8888888888888888,
+              "random_expected_catches": 5.399810399915733
             }
           },
           "calibration": {
@@ -446,7 +848,9 @@
             "random_expected_catches": 1.0794564797584354
           }
         }
-      }
+      },
+      "binding_constraint_crossing": 0.002,
+      "attainment_sweep_best_model": "LogisticRegression"
     },
     "IEEE-CIS": {
       "n_test": 90000,
@@ -490,6 +894,140 @@
               "max_recall": 0.23942537909018355,
               "attainment": 0.8222222222222222,
               "random_expected_catches": 37.59
+            }
+          },
+          "sweep": {
+            "b=0.0002": {
+              "k": 18,
+              "frauds": 3759,
+              "k_over_F": 0.004788507581803671,
+              "caught": 18,
+              "precision": 1.0,
+              "recall": 0.004788507581803671,
+              "max_precision": 1.0,
+              "max_recall": 0.004788507581803671,
+              "attainment": 1.0,
+              "random_expected_catches": 0.7518
+            },
+            "b=0.0005": {
+              "k": 45,
+              "frauds": 3759,
+              "k_over_F": 0.011971268954509178,
+              "caught": 43,
+              "precision": 0.9555555555555556,
+              "recall": 0.011439212556530992,
+              "max_precision": 1.0,
+              "max_recall": 0.011971268954509178,
+              "attainment": 0.9555555555555556,
+              "random_expected_catches": 1.8795
+            },
+            "b=0.001": {
+              "k": 90,
+              "frauds": 3759,
+              "k_over_F": 0.023942537909018357,
+              "caught": 87,
+              "precision": 0.9666666666666667,
+              "recall": 0.02314445331205108,
+              "max_precision": 1.0,
+              "max_recall": 0.023942537909018357,
+              "attainment": 0.9666666666666667,
+              "random_expected_catches": 3.759
+            },
+            "b=0.002": {
+              "k": 180,
+              "frauds": 3759,
+              "k_over_F": 0.047885075818036714,
+              "caught": 173,
+              "precision": 0.9611111111111111,
+              "recall": 0.04602287842511306,
+              "max_precision": 1.0,
+              "max_recall": 0.047885075818036714,
+              "attainment": 0.9611111111111111,
+              "random_expected_catches": 7.518
+            },
+            "b=0.003": {
+              "k": 270,
+              "frauds": 3759,
+              "k_over_F": 0.07182761372705507,
+              "caught": 254,
+              "precision": 0.9407407407407408,
+              "recall": 0.06757116254322958,
+              "max_precision": 1.0,
+              "max_recall": 0.07182761372705507,
+              "attainment": 0.9407407407407408,
+              "random_expected_catches": 11.277
+            },
+            "b=0.005": {
+              "k": 450,
+              "frauds": 3759,
+              "k_over_F": 0.11971268954509177,
+              "caught": 411,
+              "precision": 0.9133333333333333,
+              "recall": 0.10933758978451716,
+              "max_precision": 1.0,
+              "max_recall": 0.11971268954509177,
+              "attainment": 0.9133333333333333,
+              "random_expected_catches": 18.795
+            },
+            "b=0.0075": {
+              "k": 675,
+              "frauds": 3759,
+              "k_over_F": 0.17956903431763768,
+              "caught": 588,
+              "precision": 0.8711111111111111,
+              "recall": 0.1564245810055866,
+              "max_precision": 1.0,
+              "max_recall": 0.17956903431763768,
+              "attainment": 0.8711111111111111,
+              "random_expected_catches": 28.1925
+            },
+            "b=0.01": {
+              "k": 900,
+              "frauds": 3759,
+              "k_over_F": 0.23942537909018355,
+              "caught": 740,
+              "precision": 0.8222222222222222,
+              "recall": 0.1968608672519287,
+              "max_precision": 1.0,
+              "max_recall": 0.23942537909018355,
+              "attainment": 0.8222222222222222,
+              "random_expected_catches": 37.59
+            },
+            "b=0.02": {
+              "k": 1800,
+              "frauds": 3759,
+              "k_over_F": 0.4788507581803671,
+              "caught": 1129,
+              "precision": 0.6272222222222222,
+              "recall": 0.3003458366586858,
+              "max_precision": 1.0,
+              "max_recall": 0.4788507581803671,
+              "attainment": 0.6272222222222222,
+              "random_expected_catches": 75.18
+            },
+            "b=0.03": {
+              "k": 2700,
+              "frauds": 3759,
+              "k_over_F": 0.7182761372705507,
+              "caught": 1389,
+              "precision": 0.5144444444444445,
+              "recall": 0.36951316839584997,
+              "max_precision": 1.0,
+              "max_recall": 0.7182761372705507,
+              "attainment": 0.5144444444444445,
+              "random_expected_catches": 112.77
+            },
+            "b=0.05": {
+              "k": 4500,
+              "frauds": 3759,
+              "k_over_F": 1.1971268954509178,
+              "caught": 1691,
+              "precision": 0.37577777777777777,
+              "recall": 0.449853684490556,
+              "max_precision": 0.8353333333333334,
+              "max_recall": 1.0,
+              "attainment": 0.449853684490556,
+              "random_expected_catches": 187.95
             }
           },
           "calibration": {
@@ -637,6 +1175,140 @@
               "random_expected_catches": 37.59
             }
           },
+          "sweep": {
+            "b=0.0002": {
+              "k": 18,
+              "frauds": 3759,
+              "k_over_F": 0.004788507581803671,
+              "caught": 18,
+              "precision": 1.0,
+              "recall": 0.004788507581803671,
+              "max_precision": 1.0,
+              "max_recall": 0.004788507581803671,
+              "attainment": 1.0,
+              "random_expected_catches": 0.7518
+            },
+            "b=0.0005": {
+              "k": 45,
+              "frauds": 3759,
+              "k_over_F": 0.011971268954509178,
+              "caught": 45,
+              "precision": 1.0,
+              "recall": 0.011971268954509178,
+              "max_precision": 1.0,
+              "max_recall": 0.011971268954509178,
+              "attainment": 1.0,
+              "random_expected_catches": 1.8795
+            },
+            "b=0.001": {
+              "k": 90,
+              "frauds": 3759,
+              "k_over_F": 0.023942537909018357,
+              "caught": 90,
+              "precision": 1.0,
+              "recall": 0.023942537909018357,
+              "max_precision": 1.0,
+              "max_recall": 0.023942537909018357,
+              "attainment": 1.0,
+              "random_expected_catches": 3.759
+            },
+            "b=0.002": {
+              "k": 180,
+              "frauds": 3759,
+              "k_over_F": 0.047885075818036714,
+              "caught": 178,
+              "precision": 0.9888888888888889,
+              "recall": 0.047353019420058526,
+              "max_precision": 1.0,
+              "max_recall": 0.047885075818036714,
+              "attainment": 0.9888888888888889,
+              "random_expected_catches": 7.518
+            },
+            "b=0.003": {
+              "k": 270,
+              "frauds": 3759,
+              "k_over_F": 0.07182761372705507,
+              "caught": 267,
+              "precision": 0.9888888888888889,
+              "recall": 0.0710295291300878,
+              "max_precision": 1.0,
+              "max_recall": 0.07182761372705507,
+              "attainment": 0.9888888888888889,
+              "random_expected_catches": 11.277
+            },
+            "b=0.005": {
+              "k": 450,
+              "frauds": 3759,
+              "k_over_F": 0.11971268954509177,
+              "caught": 441,
+              "precision": 0.98,
+              "recall": 0.11731843575418995,
+              "max_precision": 1.0,
+              "max_recall": 0.11971268954509177,
+              "attainment": 0.98,
+              "random_expected_catches": 18.795
+            },
+            "b=0.0075": {
+              "k": 675,
+              "frauds": 3759,
+              "k_over_F": 0.17956903431763768,
+              "caught": 650,
+              "precision": 0.9629629629629629,
+              "recall": 0.17291832934291035,
+              "max_precision": 1.0,
+              "max_recall": 0.17956903431763768,
+              "attainment": 0.9629629629629629,
+              "random_expected_catches": 28.1925
+            },
+            "b=0.01": {
+              "k": 900,
+              "frauds": 3759,
+              "k_over_F": 0.23942537909018355,
+              "caught": 845,
+              "precision": 0.9388888888888889,
+              "recall": 0.22479382814578344,
+              "max_precision": 1.0,
+              "max_recall": 0.23942537909018355,
+              "attainment": 0.9388888888888889,
+              "random_expected_catches": 37.59
+            },
+            "b=0.02": {
+              "k": 1800,
+              "frauds": 3759,
+              "k_over_F": 0.4788507581803671,
+              "caught": 1331,
+              "precision": 0.7394444444444445,
+              "recall": 0.3540835328544826,
+              "max_precision": 1.0,
+              "max_recall": 0.4788507581803671,
+              "attainment": 0.7394444444444445,
+              "random_expected_catches": 75.18
+            },
+            "b=0.03": {
+              "k": 2700,
+              "frauds": 3759,
+              "k_over_F": 0.7182761372705507,
+              "caught": 1620,
+              "precision": 0.6,
+              "recall": 0.4309656823623304,
+              "max_precision": 1.0,
+              "max_recall": 0.7182761372705507,
+              "attainment": 0.6,
+              "random_expected_catches": 112.77
+            },
+            "b=0.05": {
+              "k": 4500,
+              "frauds": 3759,
+              "k_over_F": 1.1971268954509178,
+              "caught": 1915,
+              "precision": 0.4255555555555556,
+              "recall": 0.5094440010641128,
+              "max_precision": 0.8353333333333334,
+              "max_recall": 1.0,
+              "attainment": 0.5094440010641128,
+              "random_expected_catches": 187.95
+            }
+          },
           "calibration": {
             "brier": 0.03908554539351765,
             "ece": 0.08760228935987238,
@@ -658,7 +1330,7 @@
               {
                 "bin": 2,
                 "n": 6000,
-                "mean_predicted": 0.03222878979072894,
+                "mean_predicted": 0.03222878979072895,
                 "observed_rate": 0.0028333333333333335
               },
               {
@@ -706,7 +1378,7 @@
               {
                 "bin": 10,
                 "n": 6000,
-                "mean_predicted": 0.14116352572693922,
+                "mean_predicted": 0.1411635257269392,
                 "observed_rate": 0.027666666666666666
               },
               {
@@ -738,7 +1410,7 @@
           "separation": {
             "ks_statistic": 0.5979746913318218,
             "median_score_fraud": 0.4025316107777031,
-            "median_score_legit": 0.08195562160851824,
+            "median_score_legit": 0.08195562160851823,
             "p90_score_legit": 0.24507670390751182,
             "frauds_above_legit_p99": 0.4080872572492684
           }
@@ -780,6 +1452,140 @@
               "max_recall": 0.23942537909018355,
               "attainment": 0.96,
               "random_expected_catches": 37.59
+            }
+          },
+          "sweep": {
+            "b=0.0002": {
+              "k": 18,
+              "frauds": 3759,
+              "k_over_F": 0.004788507581803671,
+              "caught": 18,
+              "precision": 1.0,
+              "recall": 0.004788507581803671,
+              "max_precision": 1.0,
+              "max_recall": 0.004788507581803671,
+              "attainment": 1.0,
+              "random_expected_catches": 0.7518
+            },
+            "b=0.0005": {
+              "k": 45,
+              "frauds": 3759,
+              "k_over_F": 0.011971268954509178,
+              "caught": 45,
+              "precision": 1.0,
+              "recall": 0.011971268954509178,
+              "max_precision": 1.0,
+              "max_recall": 0.011971268954509178,
+              "attainment": 1.0,
+              "random_expected_catches": 1.8795
+            },
+            "b=0.001": {
+              "k": 90,
+              "frauds": 3759,
+              "k_over_F": 0.023942537909018357,
+              "caught": 90,
+              "precision": 1.0,
+              "recall": 0.023942537909018357,
+              "max_precision": 1.0,
+              "max_recall": 0.023942537909018357,
+              "attainment": 1.0,
+              "random_expected_catches": 3.759
+            },
+            "b=0.002": {
+              "k": 180,
+              "frauds": 3759,
+              "k_over_F": 0.047885075818036714,
+              "caught": 179,
+              "precision": 0.9944444444444445,
+              "recall": 0.047619047619047616,
+              "max_precision": 1.0,
+              "max_recall": 0.047885075818036714,
+              "attainment": 0.9944444444444445,
+              "random_expected_catches": 7.518
+            },
+            "b=0.003": {
+              "k": 270,
+              "frauds": 3759,
+              "k_over_F": 0.07182761372705507,
+              "caught": 269,
+              "precision": 0.9962962962962963,
+              "recall": 0.07156158552806598,
+              "max_precision": 1.0,
+              "max_recall": 0.07182761372705507,
+              "attainment": 0.9962962962962963,
+              "random_expected_catches": 11.277
+            },
+            "b=0.005": {
+              "k": 450,
+              "frauds": 3759,
+              "k_over_F": 0.11971268954509177,
+              "caught": 443,
+              "precision": 0.9844444444444445,
+              "recall": 0.11785049215216813,
+              "max_precision": 1.0,
+              "max_recall": 0.11971268954509177,
+              "attainment": 0.9844444444444445,
+              "random_expected_catches": 18.795
+            },
+            "b=0.0075": {
+              "k": 675,
+              "frauds": 3759,
+              "k_over_F": 0.17956903431763768,
+              "caught": 651,
+              "precision": 0.9644444444444444,
+              "recall": 0.17318435754189945,
+              "max_precision": 1.0,
+              "max_recall": 0.17956903431763768,
+              "attainment": 0.9644444444444444,
+              "random_expected_catches": 28.1925
+            },
+            "b=0.01": {
+              "k": 900,
+              "frauds": 3759,
+              "k_over_F": 0.23942537909018355,
+              "caught": 864,
+              "precision": 0.96,
+              "recall": 0.2298483639265762,
+              "max_precision": 1.0,
+              "max_recall": 0.23942537909018355,
+              "attainment": 0.96,
+              "random_expected_catches": 37.59
+            },
+            "b=0.02": {
+              "k": 1800,
+              "frauds": 3759,
+              "k_over_F": 0.4788507581803671,
+              "caught": 1496,
+              "precision": 0.8311111111111111,
+              "recall": 0.3979781856876829,
+              "max_precision": 1.0,
+              "max_recall": 0.4788507581803671,
+              "attainment": 0.8311111111111111,
+              "random_expected_catches": 75.18
+            },
+            "b=0.03": {
+              "k": 2700,
+              "frauds": 3759,
+              "k_over_F": 0.7182761372705507,
+              "caught": 1794,
+              "precision": 0.6644444444444444,
+              "recall": 0.4772545889864326,
+              "max_precision": 1.0,
+              "max_recall": 0.7182761372705507,
+              "attainment": 0.6644444444444444,
+              "random_expected_catches": 112.77
+            },
+            "b=0.05": {
+              "k": 4500,
+              "frauds": 3759,
+              "k_over_F": 1.1971268954509178,
+              "caught": 2137,
+              "precision": 0.4748888888888889,
+              "recall": 0.5685022612396914,
+              "max_precision": 0.8353333333333334,
+              "max_recall": 1.0,
+              "attainment": 0.5685022612396914,
+              "random_expected_catches": 187.95
             }
           },
           "calibration": {
@@ -966,7 +1772,9 @@
             "random_expected_catches": 37.59
           }
         }
-      }
+      },
+      "binding_constraint_crossing": 0.05,
+      "attainment_sweep_best_model": "XGBoost"
     }
   }
 }

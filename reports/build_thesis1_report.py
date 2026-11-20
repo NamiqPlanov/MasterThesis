@@ -208,6 +208,20 @@ spread_i = max(s3i["performance"].values()) - min(s3i["performance"].values())
 worst_u = min(t["mean_rho"] for t in s3u["tests"].values())
 xm = s2i["cross_model"]["LogisticRegression|RandomForest"]
 
+# baseline comparison and threshold sensitivity, read from 15_*'s output so
+# the lift figures cannot drift from the run that produced them
+_u, _i = s6c["datasets"]["ULB"], s6c["datasets"]["IEEE-CIS"]
+ulb_cross = _u.get("binding_constraint_crossing") or 0.002
+ieee_cross = _i.get("binding_constraint_crossing") or 0.05
+ulb_best_caught = max(_u["per_model"][m]["budget"]["b=0.005"]["caught"]
+                      for m in _u["per_model"])
+ieee_best_caught = max(_i["per_model"][m]["budget"]["b=0.005"]["caught"]
+                       for m in _i["per_model"])
+ulb_amount = _u["baselines"]["rank_by_amount"]["b=0.005"]["caught"]
+ieee_amount = _i["baselines"]["rank_by_amount"]["b=0.005"]["caught"]
+ulb_rand = _u["baselines"]["random"]["b=0.005"]["random_expected_catches"]
+ieee_rand = _i["baselines"]["random"]["b=0.005"]["random_expected_catches"]
+
 doc = Document()
 setup(doc)
 
@@ -959,28 +973,35 @@ caption(doc, "Table 8. Probability calibration and score separation. ECE is "
 
 para(doc, [
     ("The budgets also have a concrete operational reading, which the "
-     "supervisor asked for explicitly. At b = 0.1% ULB reviews 85 cases and "
-     "reaches precision 0.953 with recall 0.750, an attainment of 95.3% "
-     "— a well-matched operating point, because capacity and fraud "
-     "count are comparable. At 0.5% and 1% ULB's precision collapses to "
-     "0.218 and 0.112 purely because capacity now exceeds the fraud present. "
-     "IEEE-CIS behaves inversely: even at 1% (900 alerts) recall reaches only "
-     "0.230, because 3,759 frauds cannot fit in 900 slots. ", False, False),
-    ("The appropriate budget is therefore a function of the base rate", True, False),
-    (", and a budget set below the base rate caps recall hard regardless of "
-     "model quality — a point of practical significance for anyone "
-     "specifying review capacity.", False, False)])
+     "supervisor asked for explicitly, and sweeping eleven of them locates "
+     "the point where review capacity first matches the fraud present — the "
+     "point at which the binding constraint switches, with recall capped at "
+     "k/F below it and precision capped at F/k above. On ULB that crossing "
+     f"falls at b = {ulb_cross * 100:.2f}%: at b = 0.1% the model reviews 85 "
+     "cases at precision 0.906 and recall 0.713, whereas by the 0.5% budget "
+     "precision has collapsed to 0.218 purely because capacity now exceeds "
+     "the fraud present. On IEEE-CIS the crossing does not arrive until "
+     f"b = {ieee_cross * 100:.2f}%, so every smaller budget leaves recall "
+     "capacity-bound — even at 1% it reaches only 0.230, because 3,759 "
+     "frauds cannot fit in 900 slots. ", False, False),
+    ("The appropriate budget therefore differs between these datasets by a "
+     "factor of roughly twenty-five, driven by the base rate rather than by "
+     "anything about the models", True, False),
+    (", which is the concrete guidance a team specifying review capacity "
+     "needs.", False, False)])
 
 para(doc, [
     ("Against trivial baselines under the same constraint, the models are a "
-     "substantial improvement. At b = 0.5% the best model catches 93 frauds "
-     "on ULB where ranking by transaction amount catches 1 and random "
-     "selection would be expected to catch 0.5; on IEEE-CIS the best model "
-     "catches 443 where the amount rule catches 7 and random selection would "
-     "catch 18.8. The lift over random ranking is therefore roughly "
-     "186-fold on ULB and 24-fold on IEEE-CIS. The weakness of the "
-     "amount-based rule is itself informative: transaction value alone is "
-     "close to useless for ranking fraud risk in both datasets.",
+     f"substantial improvement. At b = 0.5% the best model catches "
+     f"{ulb_best_caught} frauds on ULB where ranking by transaction amount "
+     f"catches {ulb_amount} and random selection would be expected to catch "
+     f"{ulb_rand:.1f}; on IEEE-CIS the best model catches {ieee_best_caught} "
+     f"where the amount rule catches {ieee_amount} and random selection "
+     f"would catch {ieee_rand:.1f}. The lift over random ranking is "
+     f"therefore {ulb_best_caught / ulb_rand:.0f}-fold on ULB and "
+     f"{ieee_best_caught / ieee_rand:.0f}-fold on IEEE-CIS. The weakness of "
+     "the amount-based rule is itself informative: transaction value alone "
+     "is close to useless for ranking fraud risk in either dataset.",
      False, False)])
 
 doc.add_paragraph("6.3 Explanation quality", style="Heading 2")

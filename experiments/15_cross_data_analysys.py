@@ -31,6 +31,11 @@ os.environ.setdefault('PYTHONWARNINGS','ignore')
 ROOT = Path(__file__).resolve().parent.parent
 ART,OUT,DATA = ROOT / 'artifacts',ROOT/'results',ROOT/'data'
 BUDGETS = (0.001,0.005,0.01)
+# A finer sweep for the threshold-sensitivity question. Three points cannot
+# show where a dataset's attainment curve bends, and the bend is the useful
+# output: below k/F = 1 recall is capacity-bound, above it precision is.
+SWEEP = (0.0002, 0.0005, 0.001, 0.002, 0.003, 0.005,
+         0.0075, 0.01, 0.02, 0.03, 0.05)
 MODELS = ('LogisticRegression','RandomForest','XGBoost')
 N_BINS = 15
 SEED = 42
@@ -140,6 +145,7 @@ def main() -> int:
             s = scores[m]
             ds["per_model"][m] = {
                 "budget": {f"b={b}": attainment(yte, s, b) for b in BUDGETS},
+                "sweep": {f"b={b}": attainment(yte, s, b) for b in SWEEP},
                 "calibration": calibration(yte, s),
                 "separation": separation(yte, s)}
             a = ds["per_model"][m]["budget"]["b=0.005"]
@@ -156,7 +162,43 @@ def main() -> int:
         rnd = ds["baselines"]["random"]["b=0.005"]["random_expected_catches"]
         print(f"\n  catches at b=0.5%: best model {best}, "
               f"amount rule {base}, random {rnd:.1f}  "
-              f"-> lift over random x{best / max(rnd, 1e-9):.1f}\n")
+              f"-> lift over random x{best / max(rnd, 1e-9):.1f}")
+
+        # --- threshold sensitivity --------------------------------------
+        # Which constraint binds, and where does it switch? Below k/F = 1 the
+        # budget cannot hold the fraud present, so recall is capped at k/F
+        # however good the model is; above it the budget exceeds the fraud and
+        # precision is capped at F/k instead. The crossing is the operating
+        # point where capacity and fraud volume are matched.
+        best_m = max(MODELS, key=lambda mm:
+                     ds["per_model"][mm]["budget"]["b=0.005"]["attainment"])
+        print(f"\n  threshold sensitivity, {best_m} "
+              f"(budget sweep, {len(SWEEP)} points):")
+        print(f"    {'budget':>8}{'alerts':>8}{'k/F':>7}{'prec':>8}{'rec':>8}"
+              f"{'attain':>9}   binding constraint")
+        prev_ratio = None
+        crossing = None
+        for b in SWEEP:
+            a = ds["per_model"][best_m]["sweep"][f"b={b}"]
+            binding = "recall (capacity)" if a["k_over_F"] < 1 else "precision"
+            mark = ""
+            if prev_ratio is not None and prev_ratio < 1 <= a["k_over_F"]:
+                mark, crossing = "   <- capacity meets fraud volume", b
+            print(f"    {b * 100:>7.2f}%{a['k']:>8}{a['k_over_F']:>7.2f}"
+                  f"{a['precision']:>8.3f}{a['recall']:>8.3f}"
+                  f"{a['attainment'] * 100:>8.1f}%   {binding}{mark}")
+            prev_ratio = a["k_over_F"]
+        ds["binding_constraint_crossing"] = crossing
+        ds["attainment_sweep_best_model"] = best_m
+        if crossing:
+            print(f"    capacity first exceeds the fraud present at "
+                  f"b = {crossing * 100:.2f}%; beyond it precision is capped "
+                  f"by F/k regardless of model quality")
+        else:
+            print(f"    capacity never reaches the fraud present within "
+                  f"b <= {max(SWEEP) * 100:.0f}%, so recall stays "
+                  f"capacity-bound throughout")
+        print()
         report["datasets"][label] = ds
 
     (OUT / "s6_cross_dataset_diagnosis.json").write_text(

@@ -54,16 +54,16 @@ LIME weights perturbations by exp(-D^2/w^2) with w defaulting to sqrt(d)*0.75 = 
 
 ### Do different models explain the same alert the same way?
 
-H0: the two models rank the alert's features identically. With n = 400 the p-value is almost guaranteed to be small, so Cohen's d carries the argument.
+H0: the two models rank the alert's features identically. Rows are ordered by effect size, not by significance: with n = 400 every p-value is around 1e-67, which states only that the sample is large, so it is reported last. **Top-5 changed** is how many of the five features an analyst would read differ between the two models, which is the quantity with an operational meaning. It is derived exactly from Jaccard rather than estimated: with both top sets of size k = 5, J = i/(10-i) for an intersection of size i, so i = 10J/(1+J).
 
-| Dataset | Pair | Spearman | Jaccard@5 | Wilcoxon p | Cohen's d |
-|---|---|---|---|---|---|
-| ULB | LogisticRegression vs RandomForest | 0.352 [0.335, 0.369] | 0.329 [0.309, 0.349] | 1.36e-67 | 3.70 |
-| ULB | LogisticRegression vs XGBoost | 0.290 [0.277, 0.304] | 0.246 [0.234, 0.259] | 1.36e-67 | 4.92 |
-| ULB | RandomForest vs XGBoost | 0.529 [0.514, 0.543] | 0.385 [0.371, 0.399] | 1.36e-67 | 3.30 |
-| IEEE-CIS | LogisticRegression vs RandomForest | 0.553 [0.548, 0.557] | 0.013 [0.009, 0.017] | 1.37e-67 | 9.94 |
-| IEEE-CIS | LogisticRegression vs XGBoost | 0.313 [0.308, 0.318] | 0.055 [0.048, 0.063] | 1.37e-67 | 12.41 |
-| IEEE-CIS | RandomForest vs XGBoost | 0.557 [0.552, 0.561] | 0.216 [0.206, 0.227] | 1.37e-67 | 9.86 |
+| Dataset | Pair | Cohen's d | Top-5 changed | Spearman | Jaccard@5 | Wilcoxon p |
+|---|---|---|---|---|---|---|
+| ULB | LogisticRegression vs XGBoost | 4.92 | 3.02 of 5 | 0.290 [0.277, 0.304] | 0.246 [0.234, 0.259] | 1.36e-67 |
+| ULB | LogisticRegression vs RandomForest | 3.70 | 2.52 of 5 | 0.352 [0.335, 0.369] | 0.329 [0.309, 0.349] | 1.36e-67 |
+| ULB | RandomForest vs XGBoost | 3.30 | 2.22 of 5 | 0.529 [0.514, 0.543] | 0.385 [0.371, 0.399] | 1.36e-67 |
+| IEEE-CIS | LogisticRegression vs XGBoost | 12.41 | 4.48 of 5 | 0.313 [0.308, 0.318] | 0.055 [0.048, 0.063] | 1.37e-67 |
+| IEEE-CIS | LogisticRegression vs RandomForest | 9.94 | 4.87 of 5 | 0.553 [0.548, 0.557] | 0.013 [0.009, 0.017] | 1.37e-67 |
+| IEEE-CIS | RandomForest vs XGBoost | 9.86 | 3.22 of 5 | 0.557 [0.552, 0.561] | 0.216 [0.206, 0.227] | 1.37e-67 |
 
 ## S3 — does resampling change the explanation?
 
