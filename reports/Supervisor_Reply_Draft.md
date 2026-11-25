@@ -1,171 +1,93 @@
-# Draft message to Prof. Abdul Razaque
+# Draft email to Prof. Abdul Razaque
 
-*Written 14 November 2026, after all five review points were completed. Plain
-language on purpose. Edit before sending — especially the closing request,
-which assumes you want him to either rate a sample himself or suggest someone.*
+*Written 21 November 2026, after all five points of his second review were
+completed. Edit before sending — particularly the closing two questions, which
+assume you want his steer on prioritisation and his help finding a rater.*
 
 ---
 
-**Subject:** All five review points completed — results and next steps
+**Subject:** Thesis update — all five review points completed, with results
 
 Dear Professor Razaque,
 
-Thank you for the feedback. I have completed all five points you raised. Below is
-what I did and what came out of it.
+I have completed the five points from your last review. Below is what each one
+produced, followed by two questions.
 
-## 1. The alert budget is now defined
+**1. Why the two datasets behave so differently.** The contrast turned out to
+be mostly arithmetic. At a fixed alert budget, precision and recall are both
+capped by the ratio of review capacity to fraud count, and because the budget
+fixes the number of alerts, dividing either rate by its ceiling gives the same
+quantity. ULB reaches 83–86% of what is attainable and IEEE-CIS 91–98%, so
+once normalised the IEEE-CIS models are the stronger ones — the opposite of
+what the raw rates suggest. Two genuine differences remain underneath. Fraud is
+far more separable on ULB: 86–89% of its frauds score above the 99th percentile
+of legitimate traffic, against 32–47% on IEEE-CIS. And IEEE-CIS is worse
+calibrated (expected calibration error 0.09–0.34 against 0.0002–0.056), though
+ULB's very low base rate partly flatters that comparison, so I do not claim ULB
+is straightforwardly better calibrated.
 
-An alert budget is the share of transactions an investigation team has the capacity
-to review. At a budget of *b*, the alerts are the top *b* fraction of test
-transactions ranked by model score — so the budget fixes how many cases get
-reviewed, and the model decides only which cases fill them. I report three budgets
-(0.1%, 0.5% and 1%) and use 0.5% wherever a single operating point is needed. At
-0.5% that is 427 alerts on ULB and 450 on IEEE-CIS.
+**2. What the alert budgets mean in practice.** I swept eleven budgets to find
+where review capacity first matches the fraud present, which is the point where
+the binding constraint switches from recall to precision. ULB crosses at 0.20%
+and IEEE-CIS not until 5.00%, so the appropriate budget differs between them by
+roughly a factor of twenty-five and is set by the base rate rather than by model
+quality. This also showed that the 0.5% budget I had been reporting is already
+past ULB's crossing: at 0.1% the same model reaches precision 0.906 and recall
+0.713. Against trivial baselines at the same budget, the models catch 172 times
+more fraud than random ranking on ULB and 24 times more on IEEE-CIS, while
+ranking by transaction amount alone is close to useless on both.
 
-I chose a fixed capacity rather than a fixed probability threshold because a
-threshold gives a different number of alerts every day, which is not how a real
-team works.
+**3. Why resampling affects explanations more than random initialisation.** I
+repeated the factorial design on both datasets and with both explainers, giving
+four independent tests, and the ordering holds in all four: changing the
+resampling regime moves the explanation further than changing the seed or the
+model configuration. The mechanism, though, requires a qualification on what I
+reported previously. The models' own scores also diverge under resampling
+(rank agreement 0.68, against 0.90 under a seed change), so this is
+substantially a real change in the decision function rather than an explainer
+artefact — resampling changes the model in ways AUC-PR does not register. I
+also tested and rejected the off-manifold explanation: SMOTE's synthetic points
+sit closer to real fraud than real frauds sit to one another. One caveat worth
+stating plainly: on IEEE-CIS with LIME the absolute agreement is near the floor
+in every comparison, so that fourth replication supports the direction of the
+result but carries little of its weight.
 
-## 2. Precision and recall are now reported
+**4. Statistical interpretation.** Every table now leads with Cohen's *d* and
+reports how many of the five top-ranked features actually change identity,
+which is the figure with an operational meaning. The *p*-values are reported
+last, with the caveat that at n = 400 they are all around 10⁻⁶⁷ and say only
+that the sample is large.
 
-Both are reported at every budget. They showed something AUC-PR had hidden: the
-two datasets fail in opposite directions.
+**5. Reproducibility.** I have written a reproducibility document covering the
+environment and package versions, the recorded experimental settings, the
+resampling procedures, the evaluation protocol, the order in which the scripts
+reproduce the results, the limitations, and a table setting out how this
+methodology differs from the reviewed literature.
 
-| Dataset | Model | Precision @0.5% | Recall @0.5% |
-|---|---|---|---|
-| ULB | Logistic regression | 0.218 | 0.861 |
-| IEEE-CIS | XGBoost | 0.984 | 0.118 |
+The Thesis I progress report is complete and covers all of the above. Every
+table and figure in it is generated from the results files rather than typed
+in, so no reported number can disagree with the experiment that produced it.
 
-On ULB the model catches 86% of fraud but is wrong about four alerts in five. On
-IEEE-CIS almost every alert is genuine, but seven frauds in eight are missed.
-Reporting only one of the two rates would have made these look similar.
+**Two questions.**
 
-A second point surfaced: on ULB the random forest has the best AUC-PR, while
-logistic regression wins both precision and recall at the 0.5% budget. The margins
-are small, so I present this as evidence that the two kinds of measure *can*
-disagree, not as proof that one model is better.
+First, on priorities. Three items remain: bootstrap confidence intervals on the
+budget-level precision and recall rates, repeating the IEEE-CIS experiments at
+full scale to remove the subsample limitation, and extending the imbalance
+experiment to a second architecture. My own inclination is to do the second
+architecture first, because generalisation beyond gradient boosting is the one
+claim the stability finding still cannot make, and to add the bootstrap
+intervals alongside it since they are quick. Would you agree, or would you
+rather see the full-scale rerun first?
 
-## 3. Experimental conditions are now consistent
+Second, Objective 4 still needs a second independent rater so that I can report
+inter-rater agreement. It requires no machine-learning background — the rubric
+asks whether a named feature, a direction of effect and a sensible
+investigative next step can be read off an explanation — and it is roughly two
+to three hours of work. If you could rate a sample yourself, or suggest
+someone, that would close the last objective.
 
-Every script now writes its conditions — seed, number of instances, curve length,
-top-*k* — into its results file, so a mismatch cannot stay hidden. That change
-immediately found two real problems.
-
-**The stability metric was using 80 instances where the proposal commits to 1,000.**
-Fixing it changed a conclusion. At 80 instances the two tree models on ULB looked
-equally unstable; at 1,000 their confidence intervals no longer overlap and XGBoost
-is twice as unstable as the random forest.
-
-**The SHAP-versus-LIME comparison existed on ULB but not on IEEE-CIS.** Making it
-consistent turned out to be the hardest part, and it produced a finding of its own.
-LIME weights its samples by distance from the transaction, with a default width
-based on the number of features. On ULB (30 features) this works well. On IEEE-CIS
-(390 features) it fails completely: at the top of the alert queue the model's output
-is so flat that all of LIME's samples return the same prediction, its internal
-regression has nothing to fit, and the weights it returns are numerical noise — its
-own goodness-of-fit is 0.006. Using more samples does not help. I now choose the
-width separately for each transaction, based on how well LIME's local model fits,
-and discard any instance where it still does not fit. This raises the fit to between
-0.826 and 0.998.
-
-So the condition I hold constant across the two datasets is that LIME's local model
-must actually fit — not that both runs use the same formula, which would have made
-the two experiments look matched while leaving them incomparable. Both datasets now
-run the same code.
-
-I also found that fidelity was measured on two populations on ULB but only one on
-IEEE-CIS. Closing that gap produced the most surprising result of the project, in
-section 5 below.
-
-## 4. Stability across multiple runs is now measured
-
-I treated this as two separate questions, because a method can pass one and fail the
-other:
-
-- **Perturbing the input, model fixed.** Max-sensitivity (lower is better):
-
-| Model | ULB | IEEE-CIS |
-|---|---|---|
-| Logistic regression | 0.039 | 0.038 |
-| Random forest | 0.061 | 0.204 |
-| XGBoost | 0.123 | **0.960** |
-
-  XGBoost's 0.960 means a 5% change to the input — smaller than the difference
-  between two similar transactions — changes the explanation by almost as much as
-  the explanation's own size. And XGBoost is the best detector on that dataset.
-
-- **Perturbing the seed, data fixed.** I trained ten XGBoost models differing only
-  in random seed and compared their explanations of the same alerts. Agreement is
-  high: mean ρ = 0.873, with AUC-PR varying by only 0.0134.
-
-The second one also gave me the control I needed for the imbalance experiment.
-Retraining moves the explanation only to ρ = 0.873, while changing the resampling
-method moves it to 0.45–0.58. So the divergence I reported earlier is caused by the
-resampling strategy, not by random training noise. That was the obvious objection to
-that result, and it is now answered.
-
-## 5. Statistical evidence is attached to every comparison
-
-Wilcoxon signed-rank tests and Cohen's *d* on all paired comparisons, with 95%
-bootstrap confidence intervals on every estimate.
-
-One honest caveat: with 400 paired instances every *p*-value comes out around
-10⁻⁶⁷, which only tells us the sample is large. I report the *p*-values because the
-proposal promised them, but I lead with the effect sizes, which range from 2.9 to
-12.4 and carry the actual argument.
-
-## Main results so far
-
-- **Resampling changes the explanation without changing detection.** On ULB,
-  AUC-PR varies by only 0.0244 across the three regimes while explanation agreement
-  falls to ρ = 0.446 (*d* = 4.00). The most-named feature changes outright.
-- **The best detector has the least stable explanations.** On IEEE-CIS, XGBoost
-  leads on AUC-PR (0.5756) and is worst on stability (0.960).
-- **SHAP's attributions point the wrong way away from the alert queue.** On
-  IEEE-CIS, deleting the features SHAP ranked highest makes the fraud score go
-  *up* for both tree models (−0.052 and −0.100, intervals excluding zero). This
-  matters because global SHAP summary plots — the standard figure in this
-  literature — are built over exactly that population.
-- **Rank correlation can hide total disagreement.** On IEEE-CIS, logistic
-  regression and the random forest agree at ρ = 0.553, which sounds substantial,
-  but share almost no top-five features (Jaccard 0.013).
-- **A meaningful feature space is not enough.** IEEE-CIS has 23 interpretable
-  features out of 390, yet all three models rank an opaque feature first for 97.5%
-  to 99.8% of alerts.
-- **Two standard explainers disagree about the same prediction**, and worse as the
-  model gets more complex: ρ falls from 0.651 to 0.309 on ULB.
-
-The methods and results chapters are drafted. Every table and figure is generated
-from the results files rather than typed in, so a reported number cannot disagree
-with the experiment that produced it.
-
-## What I plan to do next
-
-1. **Recruit a second rater** — November. This is the only part of the work blocked
-   on something other than computation, and it has been open since mid-October.
-2. **Repeat the IEEE-CIS experiments at full scale** — December. They currently use
-   a 300,000-row chronological subsample because of memory limits, so conclusions
-   there strictly concern the first 85 days.
-3. **Add confidence intervals to the budget-level rates** — December. This would
-   establish whether the precision/recall divergence in point 2 is real or within
-   noise.
-4. **Extend the imbalance experiment to a second architecture** — January, to test
-   whether the interaction holds beyond gradient boosting.
-5. **Write the results and discussion chapters**, and draft a short practitioner
-   checklist for reporting explanation quality.
-
-**One request.** Objective 4 needs a second independent rater to score the
-explanation reports against the rubric, so that I can report inter-rater agreement.
-It does not need machine-learning expertise — the rubric asks whether a named
-feature, a direction and a sensible next step can be read off an explanation — and
-it is roughly two to three hours of work on 100 alerts per dataset. If you could
-rate a sample yourself, or suggest someone, that would unblock the last objective.
-
-I would also welcome your view on whether to prioritise the full-scale IEEE-CIS rerun
-or the second architecture, if there is not time for both.
-
-Thank you again for the review. The sample-size problem in point 3 would have gone
-unnoticed without it.
+Thank you for the review. The qualification in point 3 would not have surfaced
+without your asking for the mechanism rather than the comparison.
 
 Best regards,
 Namig Planov
